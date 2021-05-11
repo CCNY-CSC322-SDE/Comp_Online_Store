@@ -12,12 +12,12 @@ con = sqlite3.connect("./Database/store_system.db")
 cur = con.cursor()
 
 # load registration window ui
-memoryRAMUI, _ = loadUiType("./ui/memory-ram.ui")
+gpuUI, _ = loadUiType("./ui/gpu.ui")
 productInfoUI, _ = loadUiType("./ui/product-info.ui")
 
 
 # ProductDetails class will initialize product-details.ui
-class MemoryRAMInfo(QWidget, productInfoUI):
+class GPUInfo(QWidget, productInfoUI):
     # initialize the productDetailsUI
     def __init__(self, id):
         QWidget.__init__(self)
@@ -50,9 +50,9 @@ class MemoryRAMInfo(QWidget, productInfoUI):
     # retrieve product details from the database
     def productDetails(self, productId):
         # sql to retrieve details of the product based on product id
-        sql = ''' SELECT product.product_id as id, product_name, capacity, memory_speed, ram_type, price
+        sql = ''' SELECT product.product_id as id, product_name, memory_size, memory_speed, price
                 FROM product
-                INNER JOIN ram ON product.product_id = ram.product_id
+                INNER JOIN gpu ON product.product_id = gpu.product_id
                 WHERE id = ? '''
 
         # form the sql query
@@ -64,23 +64,19 @@ class MemoryRAMInfo(QWidget, productInfoUI):
         # store product attribute values into variables
         self.productID = product[0]
         self.productName = product[1]
-        self.capacity = product[2]
+        self.memorySize = product[2]
         self.memorySpeed = product[3]
-        self.ramType = product[4]
-        self.price = product[5]
+        self.price = product[4]
 
     def widgets(self):
         self.labelProductName = QLabel()
         self.labelProductName.setText(str(self.productName))
 
-        self.labelCapacity = QLabel()
-        self.labelCapacity.setText(str(self.capacity))
+        self.labelMemorySize = QLabel()
+        self.labelMemorySize.setText(str(self.memorySize))
 
         self.labelMemorySpeed = QLabel()
         self.labelMemorySpeed.setText(str(self.memorySpeed))
-
-        self.labelRAMType = QLabel()
-        self.labelRAMType.setText(str(self.ramType))
 
         self.labelPrice = QLabel()
         self.labelPrice.setText(str(self.price))
@@ -93,13 +89,10 @@ class MemoryRAMInfo(QWidget, productInfoUI):
             QLabel("Price in USD:"), self.labelPrice)
 
         self.formLayoutProductInfo.addRow(
-            QLabel("Capacity:"), self.labelCapacity)
+            QLabel("Memory Size:"), self.labelMemorySize)
 
         self.formLayoutProductInfo.addRow(
             QLabel("Memory Speed:"), self.labelMemorySpeed)
-
-        self.formLayoutProductInfo.addRow(
-            QLabel("RAM Type:"), self.labelRAMType)
 
     # count the number of each vote_score of a product
     def getProductRatings(self):
@@ -163,69 +156,69 @@ class MemoryRAMInfo(QWidget, productInfoUI):
 
 
 # CPUWindow class will initialize the register.ui
-class MemoryRAMWindow(QWidget, memoryRAMUI):
+class GPUWindow(QWidget, gpuUI):
     def __init__(self):
         QWidget.__init__(self)
         self.setupUi(self)
 
-        self.listRAMs()
+        self.listGPUs()
         self.handleClickEvents()
 
     # handle click events
     def handleClickEvents(self):
         # when one of the cpu items is double clicked
-        self.tableWidgetRAMs.doubleClicked.connect(
-            self.selectRAM)
+        self.tableWidgetGPUs.doubleClicked.connect(
+            self.selectGPU)
 
      # this method will create and open the product details window, when products are double clicked
-    def openMemoryRAMInfoWindow(self, productId):
-        self.memoryRAMInfoWindow = MemoryRAMInfo(productId)
-        self.memoryRAMInfoWindow.show()
+    def openGPUWindow(self, productId):
+        self.gpuInfoWindow = GPUInfo(productId)
+        self.gpuInfoWindow.show()
 
     # display the list of CPUs
-    def listRAMs(self):
+    def listGPUs(self):
         # hide the product id column
-        self.tableWidgetRAMs.setColumnHidden(0, True)
-        self.tableWidgetRAMs.setFont(QFont("Times", 12))
+        self.tableWidgetGPUs.setColumnHidden(0, True)
+        self.tableWidgetGPUs.setFont(QFont("Times", 12))
 
         # if already exist, reset table data
-        for i in reversed(range(self.tableWidgetRAMs.rowCount())):
-            self.tableWidgetRAMs.removeRow(i)
+        for i in reversed(range(self.tableWidgetGPUs.rowCount())):
+            self.tableWidgetGPUs.removeRow(i)
 
         # sql query to retrieve suggested systems from db
-        sql = ''' SELECT product.product_id as id, product_name, capacity, memory_speed, ram_type, price
+        sql = ''' SELECT product.product_id as id, product_name, memory_size, memory_speed, price
                 FROM product
-                INNER JOIN ram ON product.product_id = ram.product_id '''
+                INNER JOIN gpu ON product.product_id = gpu.product_id '''
 
         # execute query
         query = cur.execute(sql)
         # populate tableWidgetCPUs
         for row_data in query:
 
-            row_number = self.tableWidgetRAMs.rowCount()
-            self.tableWidgetRAMs.insertRow(row_number)
+            row_number = self.tableWidgetGPUs.rowCount()
+            self.tableWidgetGPUs.insertRow(row_number)
 
             for column_number, data in enumerate(row_data):
                 item = QTableWidgetItem()  # create the item
                 item.setText(str(data))  # set text data to item
                 # change the alignment to center
                 item.setTextAlignment(Qt.AlignHCenter)
-                self.tableWidgetRAMs.setItem(  # set item on tableWidget
+                self.tableWidgetGPUs.setItem(  # set item on tableWidget
                     row_number, column_number, item)
 
-        self.tableWidgetRAMs.setEditTriggers(
+        self.tableWidgetGPUs.setEditTriggers(
             QAbstractItemView.NoEditTriggers)
 
     # select CPU
-    def selectRAM(self):
+    def selectGPU(self):
         # declare variables
         productId = 0
         listProduct = []
 
         # store all attribute values of a product into listProduct
-        for i in range(0, 3):
-            listProduct.append(self.tableWidgetRAMs.item(
-                self.tableWidgetRAMs.currentRow(), i).text())
+        for i in range(0, 4):
+            listProduct.append(self.tableWidgetGPUs.item(
+                self.tableWidgetGPUs.currentRow(), i).text())
         # get the product id
         productId = listProduct[0]
-        self.openMemoryRAMInfoWindow(productId)
+        self.openGPUWindow(productId)
