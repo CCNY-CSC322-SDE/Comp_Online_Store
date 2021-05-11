@@ -7,15 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>1000</height>
+    <height>750</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Online Computer Store</string>
-  </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>../icons/online-shopping.svg</normaloff>../icons/online-shopping.svg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLineEdit" name="lineEditSearchBox">
@@ -56,12 +52,12 @@
      <rect>
       <x>-9</x>
       <y>130</y>
-      <width>1001</width>
-      <height>821</height>
+      <width>1031</width>
+      <height>700</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>5</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -70,128 +66,365 @@
      <widget class="QLabel" name="label">
       <property name="geometry">
        <rect>
-        <x>283</x>
-        <y>250</y>
-        <width>251</width>
+        <x>370</x>
+        <y>263</y>
+        <width>271</width>
         <height>31</height>
        </rect>
       </property>
       <property name="text">
-       <string>LAPTOPS / NOTEBOOKS BEST SELLERS:</string>
+       <string>BEST SELLERS IN LAPTOPS / NOTEBOOKS</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_13">
-      <property name="geometry">
-       <rect>
-        <x>273</x>
-        <y>290</y>
-        <width>161</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>ITEM1</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_14">
-      <property name="geometry">
-       <rect>
-        <x>463</x>
-        <y>290</y>
-        <width>161</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>ITEM2</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_15">
-      <property name="geometry">
-       <rect>
-        <x>643</x>
-        <y>290</y>
-        <width>161</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>ITEM3</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_5">
       <property name="geometry">
        <rect>
-        <x>291</x>
+        <x>370</x>
         <y>20</y>
         <width>281</width>
         <height>31</height>
        </rect>
       </property>
       <property name="text">
-       <string>LAPTOPS / NOTEBOOKS SUGGESTED ITEMS:</string>
+       <string>LAPTOPS / NOTEBOOKS SUGGESTED ITEMS</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_36">
+     <widget class="QTableWidget" name="tableWidgetSuggestedSystems">
       <property name="geometry">
        <rect>
-        <x>281</x>
-        <y>60</y>
-        <width>161</width>
-        <height>121</height>
+        <x>180</x>
+        <y>80</y>
+        <width>701</width>
+        <height>171</height>
        </rect>
       </property>
-      <property name="text">
-       <string>System1</string>
+      <property name="editTriggers">
+       <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
       </property>
+      <column>
+       <property name="text">
+        <string>Product ID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Product Name</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Price</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>CPU</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>GPU</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>RAM</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Storage</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>OS</string>
+       </property>
+      </column>
      </widget>
-     <widget class="QPushButton" name="pushButton_37">
+     <widget class="QTableWidget" name="tableWidgetBestSellers">
       <property name="geometry">
        <rect>
-        <x>471</x>
-        <y>60</y>
-        <width>161</width>
-        <height>121</height>
+        <x>130</x>
+        <y>310</y>
+        <width>801</width>
+        <height>181</height>
        </rect>
       </property>
-      <property name="text">
-       <string>System2</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_38">
-      <property name="geometry">
-       <rect>
-        <x>651</x>
-        <y>60</y>
-        <width>161</width>
-        <height>121</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>System3</string>
-      </property>
+      <column>
+       <property name="text">
+        <string>Product ID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Product Name</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Price</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>CPU</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>GPU</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>RAM</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Storage</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>OS</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Quantity Sold</string>
+       </property>
+      </column>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
       <string>mac</string>
      </attribute>
+     <widget class="QTableWidget" name="tableWidgetMacSystems">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>80</y>
+        <width>701</width>
+        <height>171</height>
+       </rect>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+      </property>
+      <column>
+       <property name="text">
+        <string>Product ID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Product Name</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Price</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>CPU</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>GPU</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>RAM</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Storage</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>OS</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>20</y>
+        <width>261</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>iMac/MacBook Pro/MacBook Air/Mac Mini</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_3">
      <attribute name="title">
       <string>windows</string>
      </attribute>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>17</y>
+        <width>401</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>WINDOWS LAPTOPS FOR BUSINESS, COMPUTING AND GAMING</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QTableWidget" name="tableWidgetWindowsSystems">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>76</y>
+        <width>701</width>
+        <height>171</height>
+       </rect>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+      </property>
+      <column>
+       <property name="text">
+        <string>Product ID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Product Name</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Price</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>CPU</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>GPU</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>RAM</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Storage</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>OS</string>
+       </property>
+      </column>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_4">
      <attribute name="title">
       <string>linux</string>
      </attribute>
+     <widget class="QTableWidget" name="tableWidgetLinuxSystems">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>74</y>
+        <width>701</width>
+        <height>171</height>
+       </rect>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+      </property>
+      <column>
+       <property name="text">
+        <string>Product ID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Product Name</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Price</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>CPU</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>GPU</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>RAM</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Storage</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>OS</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QLabel" name="label_8">
+      <property name="geometry">
+       <rect>
+        <x>340</x>
+        <y>20</y>
+        <width>381</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>LINUX LAPTOPS FOR BUSINESS, COMPUTING AND GAMING</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_5">
      <attribute name="title">
@@ -201,7 +434,7 @@
       <property name="geometry">
        <rect>
         <x>129</x>
-        <y>40</y>
+        <y>74</y>
         <width>221</width>
         <height>271</height>
        </rect>
@@ -210,11 +443,11 @@
        <string/>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_27">
+     <widget class="QPushButton" name="pushButtonIntelBusiness">
       <property name="geometry">
        <rect>
         <x>179</x>
-        <y>110</y>
+        <y>144</y>
         <width>121</width>
         <height>41</height>
        </rect>
@@ -223,24 +456,24 @@
        <string>Build With Intel</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_28">
+     <widget class="QPushButton" name="pushButtonAMDBusiness">
       <property name="geometry">
        <rect>
         <x>180</x>
-        <y>160</y>
+        <y>194</y>
         <width>121</width>
         <height>41</height>
        </rect>
       </property>
       <property name="text">
-       <string>Build With ARM</string>
+       <string>Build With AMD</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_29">
+     <widget class="QPushButton" name="pushButtonPreBuiltBusiness">
       <property name="geometry">
        <rect>
         <x>180</x>
-        <y>210</y>
+        <y>244</y>
         <width>121</width>
         <height>41</height>
        </rect>
@@ -253,7 +486,7 @@
       <property name="geometry">
        <rect>
         <x>209</x>
-        <y>10</y>
+        <y>38</y>
         <width>71</width>
         <height>31</height>
        </rect>
@@ -266,7 +499,7 @@
       <property name="geometry">
        <rect>
         <x>410</x>
-        <y>40</y>
+        <y>73</y>
         <width>221</width>
         <height>271</height>
        </rect>
@@ -279,7 +512,7 @@
       <property name="geometry">
        <rect>
         <x>690</x>
-        <y>40</y>
+        <y>72</y>
         <width>221</width>
         <height>271</height>
        </rect>
@@ -292,7 +525,7 @@
       <property name="geometry">
        <rect>
         <x>480</x>
-        <y>10</y>
+        <y>37</y>
         <width>71</width>
         <height>31</height>
        </rect>
@@ -305,8 +538,8 @@
       <property name="geometry">
        <rect>
         <x>770</x>
-        <y>10</y>
-        <width>71</width>
+        <y>37</y>
+        <width>51</width>
         <height>31</height>
        </rect>
       </property>
@@ -314,11 +547,11 @@
        <string>Gaming</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_30">
+     <widget class="QPushButton" name="pushButtonIntelComputing">
       <property name="geometry">
        <rect>
         <x>460</x>
-        <y>110</y>
+        <y>143</y>
         <width>121</width>
         <height>41</height>
        </rect>
@@ -327,11 +560,11 @@
        <string>Build With Intel</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_31">
+     <widget class="QPushButton" name="pushButtonIntelGaming">
       <property name="geometry">
        <rect>
         <x>740</x>
-        <y>110</y>
+        <y>142</y>
         <width>121</width>
         <height>41</height>
        </rect>
@@ -340,37 +573,37 @@
        <string>Build With Intel</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_32">
+     <widget class="QPushButton" name="pushButtonAMDComputing">
       <property name="geometry">
        <rect>
         <x>460</x>
-        <y>160</y>
+        <y>193</y>
         <width>121</width>
         <height>41</height>
        </rect>
       </property>
       <property name="text">
-       <string>Build With ARM</string>
+       <string>Build With AMD</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_33">
+     <widget class="QPushButton" name="pushButtonAMDGaming">
       <property name="geometry">
        <rect>
         <x>740</x>
-        <y>160</y>
+        <y>192</y>
         <width>121</width>
         <height>41</height>
        </rect>
       </property>
       <property name="text">
-       <string>Build With ARM</string>
+       <string>Build With AMD</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_34">
+     <widget class="QPushButton" name="pushButtonPreBuiltComputing">
       <property name="geometry">
        <rect>
         <x>460</x>
-        <y>210</y>
+        <y>243</y>
         <width>121</width>
         <height>41</height>
        </rect>
@@ -379,17 +612,30 @@
        <string>View Pre-Built</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_35">
+     <widget class="QPushButton" name="pushButtonPreBuiltGaming">
       <property name="geometry">
        <rect>
         <x>740</x>
-        <y>210</y>
+        <y>242</y>
         <width>121</width>
         <height>41</height>
        </rect>
       </property>
       <property name="text">
        <string>View Pre-Built</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_10">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>10</y>
+        <width>241</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>BUILD YOUR OWN CUSTOM PC HERE</string>
       </property>
      </widget>
     </widget>
@@ -397,10 +643,10 @@
      <attribute name="title">
       <string>components</string>
      </attribute>
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QToolButton" name="toolButtonCPU">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>280</x>
         <y>40</y>
         <width>151</width>
         <height>141</height>
@@ -409,11 +655,30 @@
       <property name="text">
        <string>CPUs</string>
       </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../icons/cpu.svg</normaloff>../icons/cpu.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="autoRepeat">
+       <bool>false</bool>
+      </property>
+      <property name="popupMode">
+       <enum>QToolButton::DelayedPopup</enum>
+      </property>
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonTextUnderIcon</enum>
+      </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_16">
+     <widget class="QToolButton" name="toolButtonMotherboard">
       <property name="geometry">
        <rect>
-        <x>460</x>
+        <x>470</x>
         <y>40</y>
         <width>151</width>
         <height>141</height>
@@ -422,11 +687,24 @@
       <property name="text">
        <string>Motherboard</string>
       </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../icons/motherboard.svg</normaloff>../icons/motherboard.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonTextUnderIcon</enum>
+      </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_17">
+     <widget class="QToolButton" name="toolButtonMemory">
       <property name="geometry">
        <rect>
-        <x>650</x>
+        <x>660</x>
         <y>40</y>
         <width>151</width>
         <height>141</height>
@@ -435,12 +713,25 @@
       <property name="text">
        <string>Memory</string>
       </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../icons/ram-memory.svg</normaloff>../icons/ram-memory.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonTextUnderIcon</enum>
+      </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_18">
+     <widget class="QToolButton" name="toolButtonVideoCards">
       <property name="geometry">
        <rect>
-        <x>270</x>
-        <y>200</y>
+        <x>280</x>
+        <y>210</y>
         <width>151</width>
         <height>141</height>
        </rect>
@@ -448,12 +739,25 @@
       <property name="text">
        <string>Video Cards</string>
       </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../icons/video-card.svg</normaloff>../icons/video-card.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonTextUnderIcon</enum>
+      </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_19">
+     <widget class="QToolButton" name="toolButtonCase">
       <property name="geometry">
        <rect>
-        <x>460</x>
-        <y>200</y>
+        <x>470</x>
+        <y>210</y>
         <width>151</width>
         <height>141</height>
        </rect>
@@ -461,12 +765,25 @@
       <property name="text">
        <string>Case</string>
       </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../icons/case.svg</normaloff>../icons/case.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonTextUnderIcon</enum>
+      </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_20">
+     <widget class="QToolButton" name="toolButtonPowerSupply">
       <property name="geometry">
        <rect>
-        <x>650</x>
-        <y>200</y>
+        <x>660</x>
+        <y>210</y>
         <width>151</width>
         <height>141</height>
        </rect>
@@ -474,12 +791,25 @@
       <property name="text">
        <string>Power Supply</string>
       </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../icons/power-supply.svg</normaloff>../icons/power-supply.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonTextUnderIcon</enum>
+      </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_21">
+     <widget class="QToolButton" name="toolButtonStorage">
       <property name="geometry">
        <rect>
-        <x>270</x>
-        <y>360</y>
+        <x>280</x>
+        <y>380</y>
         <width>151</width>
         <height>141</height>
        </rect>
@@ -487,12 +817,25 @@
       <property name="text">
        <string>Storage</string>
       </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../icons/harddisk.svg</normaloff>../icons/harddisk.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonTextUnderIcon</enum>
+      </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_22">
+     <widget class="QToolButton" name="toolButtonCPUCooler">
       <property name="geometry">
        <rect>
-        <x>460</x>
-        <y>360</y>
+        <x>470</x>
+        <y>380</y>
         <width>151</width>
         <height>141</height>
        </rect>
@@ -500,18 +843,57 @@
       <property name="text">
        <string>CPU Cooler</string>
       </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../icons/cpu-cooler.svg</normaloff>../icons/cpu-cooler.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonTextUnderIcon</enum>
+      </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_23">
+     <widget class="QToolButton" name="toolButtonOS">
       <property name="geometry">
        <rect>
-        <x>650</x>
-        <y>360</y>
+        <x>660</x>
+        <y>380</y>
         <width>151</width>
         <height>141</height>
        </rect>
       </property>
       <property name="text">
-       <string>Operating System</string>
+       <string>Operating Systems</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../icons/operating-system.svg</normaloff>../icons/operating-system.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonTextUnderIcon</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>454</x>
+        <y>10</y>
+        <width>191</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>SELECT YOUR COMPONENTS</string>
       </property>
      </widget>
     </widget>
