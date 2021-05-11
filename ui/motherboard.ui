@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>396</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Motherboards</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>30</y>
+     <width>131</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>List of Motherboards</string>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="tableWidgetMotherboards">
+   <property name="geometry">
+    <rect>
+     <x>48</x>
+     <y>80</y>
+     <width>701</width>
+     <height>192</height>
+    </rect>
+   </property>
+   <column>
+    <property name="text">
+     <string>Product Id</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Product Name</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>CPU Socket</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Chipset</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string># of RAM Slots</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>RAM Capacity</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>RAM Type</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Price</string>
+    </property>
+   </column>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
