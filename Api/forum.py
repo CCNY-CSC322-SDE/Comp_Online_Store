@@ -5,13 +5,12 @@ from Api import account
 from Models.Forums import ForumThread
 from Models.Forums import ForumReply
 
-database = r"store_system.db"
+database = r"./Database/store_system.db"
 store_db = None
 
-
 def initialize():
+    global store_db
     store_db = create_connection(database)
-
 
 def create_connection(db_file):
     conn = None
@@ -19,7 +18,6 @@ def create_connection(db_file):
         conn = sqlite3.connect(db_file)
     except Error as e:
         print(e)
-
     return conn
 
 
@@ -30,22 +28,22 @@ def getThreads():
     results = []
     with store_db:
         cur = store_db.cursor()
-        sql = '''SELECT * FROM forum_thread'''
+        sql = '''SELECT * FROM forum_thread ORDER BY date ASC LIMIT 10'''
         cur.execute(sql)
 
         rows = cur.fetchall()
         for row in rows:
-            results.append(ForumThread(row[0], row[1]))
+            results.append(ForumThread(*row))
     return results
 
 
-def createThread(product_name):
+def createThread(product_name,account_id,title):
     if store_db == None:
         initialize()
     with store_db:
         cur = store_db.cursor()
-        sql = '''INSERT INTO forum_thread (product_name) VALUES(''' + product_name + ''')'''
-        cur.execute(sql)
+        sql = '''INSERT INTO forum_thread (product_name,account_id,title) VALUES(?, ?, ?)'''
+        cur.execute(sql,(product_name,account_id,title))
 
 
 def getThreadReplies(thread_no):
@@ -54,8 +52,8 @@ def getThreadReplies(thread_no):
     results = []
     with store_db:
         cur = store_db.cursor()
-        sql = '''SELECT * FROM forum_reply'''
-        cur.execute(sql)
+        sql = '''SELECT * FROM forum_reply WHERE thread_no = ?'''
+        cur.execute(sql,(thread_no))
 
         rows = cur.fetchall()
         for row in rows:
