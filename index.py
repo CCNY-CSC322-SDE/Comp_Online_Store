@@ -155,9 +155,8 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
             msg.exec_()
             self.clickme()
 
+
 # MainApp class will initialize the mainwindow.ui
-
-
 class MainApp(QMainWindow, mainUI):
     def __init__(self):
         QMainWindow.__init__(self)
