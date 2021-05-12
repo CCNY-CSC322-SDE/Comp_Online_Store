@@ -11,27 +11,27 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Motherboards</string>
+   <string>RAMs</string>
   </property>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>350</x>
+     <x>360</x>
      <y>30</y>
-     <width>111</width>
+     <width>191</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
-    <string>List of PC Cases</string>
+    <string>List of Power Supply Units</string>
    </property>
   </widget>
-  <widget class="QTableWidget" name="tableWidgetPCCases">
+  <widget class="QTableWidget" name="tableWidgetPSUs">
    <property name="geometry">
     <rect>
-     <x>48</x>
-     <y>80</y>
-     <width>701</width>
+     <x>240</x>
+     <y>90</y>
+     <width>401</width>
      <height>192</height>
     </rect>
    </property>
@@ -47,27 +47,12 @@
    </column>
    <column>
     <property name="text">
-     <string>Motherboard Support</string>
+     <string>Maximum Power</string>
     </property>
    </column>
    <column>
     <property name="text">
-     <string>IO Ports</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Fan Support</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>HDD Support</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>PSU Support</string>
+     <string>Type</string>
     </property>
    </column>
    <column>
