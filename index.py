@@ -2,10 +2,13 @@ import sys
 import os
 import PyQt5
 import sqlite3
+import datetime
+import re
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.uic import loadUiType
+from sqlite3 import Error
 
 # import user defined classes
 from Prototypes.ProductInfo import ProductInfo
@@ -37,10 +40,11 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
         self.setupUi(self)
         self.subtotal = 0
         self.cur = con.cursor()
-        self.update_cart()
+        self.init_cart()
+        self.verticalLayout.setAlignment(Qt.AlignTop)
         
         self.pushButton.clicked.connect(self.checkout)
-        self.pushButton_2.clicked.connect(self.clickme)
+        self.pushButton_2.clicked.connect(self.close_window)
     
     def deleteItemsOfLayout(self, layout):
         if layout is not None:
@@ -52,14 +56,14 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
                 else:
                     self.deleteItemsOfLayout(item.layout())
     
-    def update_cart(self):
+    def init_cart(self):
+        global user_cart
         self.deleteItemsOfLayout(self.verticalLayout)
         self.subtotal = 0
         user_cart = fetch_cart()
 
         count = 0;
         for row in user_cart:
-            #TO ADD: minimum height and maximum width to widgets
             string = 'Item Name: ' + row[0] + '\nPrice: ' + str(row[1]) + '\nAmount: ' + str(row[2]) + '\n'
             self.subtotal += (row[1] * row[2])
             h_layout = QHBoxLayout()
@@ -74,11 +78,12 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
             
         self.label_3.setText("Subtotal: " + str(self.subtotal))
         
-    def clickme(self):
+    def close_window(self):
         con.commit()
         self.close()
          
     def removeItem(self):
+        global user_cart
         button = self.sender()
         index = int(re.sub('[^0-9]','', button.objectName()))
         self.subtotal -= user_cart[index][1] * user_cart[index][2]
@@ -89,9 +94,10 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
         self.label_3.setText("Subtotal: " + str(self.subtotal))
         
         con.commit()
-        del user_cart[index]
+        self.init_cart()
          
     def checkout(self):
+        global user_cart
         msg = QMessageBox()
         
         if (self.radioButton.isChecked() and self.subtotal > user[1]):
@@ -285,7 +291,7 @@ class MainApp(QMainWindow, mainUI):
     def openCartWindow(self, checked):
         if self.cartWindow is None:
             self.cartWindow = CartWindow()
-        self.cartWindow.update_cart()
+        self.cartWindow.init_cart()
         self.cartWindow.show()
 
     # this method will create and open the product details window, when products are double clicked
@@ -600,7 +606,7 @@ def fetch_cart():
     return rows
 		
 user = (3, 50000, '1111-1111-1111-1111')
-user_cart =  fetch_cart() 
+user_cart = []
 
 # this main method is not inside the class, it is in the class level
 # this method shows the main window
