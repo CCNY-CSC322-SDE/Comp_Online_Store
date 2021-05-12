@@ -207,7 +207,7 @@ class ProductInfo(QWidget, productInfoUI):
 
 
 # BusinessPCWindow class will initialize the register.ui
-class BusinessPCWindow(QWidget, preBuiltUI):
+class ComputingPCWindow(QWidget, preBuiltUI):
     def __init__(self):
         QWidget.__init__(self)
         self.setupUi(self)
@@ -240,7 +240,7 @@ class BusinessPCWindow(QWidget, preBuiltUI):
         sql = ''' SELECT product.product_id as id, product_name, price, cpu, gpu, ram_size, hdd_size, operating_system
                 FROM product
                 INNER JOIN system ON product.product_id = system.product_id
-                WHERE purpose = 0   AND UPPER(operating_system) LIKE '%WINDOWS%' '''
+                WHERE purpose = 1  AND UPPER(operating_system) LIKE '%WINDOWS%'; '''
 
         # execute query
         query = cur.execute(sql)

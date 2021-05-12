@@ -25,6 +25,7 @@ from Prototypes.StorageWindow import StorageWindow
 from Prototypes.CPUCoolerWindow import CPUCoolerWindow
 from Prototypes.OSWindow import OSWindow
 from Prototypes.BusinessPCWindow import BusinessPCWindow
+from Prototypes.ComputingPCWindow import ComputingPCWindow
 
 # connect to the database and create a cursor
 con = sqlite3.connect("./Database/store_system.db")
@@ -229,6 +230,9 @@ class MainApp(QMainWindow, mainUI):
         self.pushButtonPreBuiltBusiness.clicked.connect(
             self.openBusinessPCWindow)
 
+        self.pushButtonPreBuiltComputing.clicked.connect(
+            self.openComputingPCWindow)
+
         ########## Handle double click events on the table items #########
 
         # when one of the suggested systems is double clicked
@@ -360,6 +364,11 @@ class MainApp(QMainWindow, mainUI):
     def openBusinessPCWindow(self):
         self.businessPCWindow = BusinessPCWindow()
         self.businessPCWindow.show()
+
+    # open case window and list CPUs
+    def openComputingPCWindow(self):
+        self.computingPCWindow = ComputingPCWindow()
+        self.computingPCWindow.show()
 
     ####### display products on the table widgets #########
 
