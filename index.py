@@ -18,6 +18,7 @@ from Prototypes.MemoryRAMWindow import MemoryRAMWindow
 from Prototypes.GPUWindow import GPUWindow
 from Prototypes.CaseWindow import CaseWindow
 from Prototypes.PSUWindow import PSUWindow
+from Prototypes.StorageWindow import StorageWindow
 
 # connect to the database and create a cursor
 con = sqlite3.connect("./Database/store_system.db")
@@ -48,6 +49,7 @@ class MainApp(QMainWindow, mainUI):
         self.gpuWindow = None
         self.caseWindow = None
         self.psuWindow = None
+        self.storageWindow = None
 
         # call methods
         self.mainWindowUI()
@@ -86,6 +88,7 @@ class MainApp(QMainWindow, mainUI):
         self.toolButtonVideoCards.clicked.connect(self.openGPUWindow)
         self.toolButtonCase.clicked.connect(self.openCaseWindow)
         self.toolButtonPowerSupply.clicked.connect(self.openPowerSupplyWindow)
+        self.toolButtonStorage.clicked.connect(self.openStorageWindow)
 
         ########## Handle double click events on the table items #########
 
@@ -192,6 +195,11 @@ class MainApp(QMainWindow, mainUI):
     def openPowerSupplyWindow(self):
         self.psuWindow = PSUWindow()
         self.psuWindow.show()
+
+    # open case window and list CPUs
+    def openStorageWindow(self):
+        self.storageWindow = StorageWindow()
+        self.storageWindow.show()
 
     ####### display products on the table widgets #########
 

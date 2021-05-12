@@ -11,27 +11,27 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Video Cards (GPUs)</string>
+   <string>Storage Devices</string>
   </property>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>390</x>
+     <x>360</x>
      <y>30</y>
-     <width>121</width>
+     <width>151</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
-    <string>List of Video Cards</string>
+    <string>List of Storage Devices</string>
    </property>
   </widget>
-  <widget class="QTableWidget" name="tableWidgetGPUs">
+  <widget class="QTableWidget" name="tableWidgetStorages">
    <property name="geometry">
     <rect>
-     <x>240</x>
-     <y>90</y>
-     <width>401</width>
+     <x>170</x>
+     <y>80</y>
+     <width>501</width>
      <height>192</height>
     </rect>
    </property>
@@ -47,12 +47,17 @@
    </column>
    <column>
     <property name="text">
-     <string>Memory Size</string>
+     <string>Type</string>
     </property>
    </column>
    <column>
     <property name="text">
-     <string>Memory Speed</string>
+     <string>Capacity</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Rotation Speed</string>
     </property>
    </column>
    <column>
