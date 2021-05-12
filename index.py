@@ -61,22 +61,27 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
         self.deleteItemsOfLayout(self.verticalLayout)
         self.subtotal = 0
         user_cart = fetch_cart()
-
-        count = 0;
-        for row in user_cart:
-            string = 'Item Name: ' + row[0] + '\nPrice: ' + str(row[1]) + '\nAmount: ' + str(row[2]) + '\n'
-            self.subtotal += (row[1] * row[2])
-            h_layout = QHBoxLayout()
-            label = QLabel(string)
-            label.setMinimumHeight(100)
-            button = QPushButton(text="Remove", objectName= str(count) + "_remove", clicked = self.removeItem)
-            button.setMaximumWidth(100)
-            h_layout.addWidget(label)
-            h_layout.addWidget(button)
-            self.verticalLayout.addLayout(h_layout)
-            count += 1
+        
+        
+        if(len(user_cart) == 0):
+            label = QLabel('No items in cart.')
+            self.verticalLayout.addWidget(label)
+        else:
+            count = 0;
+            for row in user_cart:
+                string = 'Item Name: ' + row[0] + '\nPrice: ' + str(row[1]) + '\nAmount: ' + str(row[2]) + '\n'
+                self.subtotal += (row[1] * row[2])
+                h_layout = QHBoxLayout()
+                label = QLabel(string)
+                label.setMinimumHeight(100)
+                button = QPushButton(text="Remove", objectName= str(count) + "_remove", clicked = self.removeItem)
+                button.setMaximumWidth(100)
+                h_layout.addWidget(label)
+                h_layout.addWidget(button)
+                self.verticalLayout.addLayout(h_layout)
+                count += 1
             
-        self.label_3.setText("Subtotal: " + str(self.subtotal))
+        self.label_3.setText("Subtotal: " + str(round(self.subtotal,2)))
         
     def close_window(self):
         con.commit()
@@ -91,7 +96,7 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
         params = (user[0], user_cart[index][3])
         self.cur.execute(sql, params)
         self.deleteItemsOfLayout(self.verticalLayout.itemAt(index))
-        self.label_3.setText("Subtotal: " + str(self.subtotal))
+        self.label_3.setText("Subtotal: " + str(round(self.subtotal,2)))
         
         con.commit()
         self.init_cart()
@@ -146,7 +151,7 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
             msg.setInformativeText("Processing your order can take a few business days.")
             msg.setWindowTitle("Confirmation")
             msg.exec_()
-            self.clickme()
+            self.close_window()
 
 # MainApp class will initialize the mainwindow.ui
 class MainApp(QMainWindow, mainUI):
@@ -296,52 +301,52 @@ class MainApp(QMainWindow, mainUI):
 
     # this method will create and open the product details window, when products are double clicked
     def openProductInfoWindow(self, productId):
-        self.productInfoWindow = ProductInfo(productId)
+        self.productInfoWindow = ProductInfo(productId, user)
         self.productInfoWindow.show()
 
     # open CPU window and list CPUs
     def openCPUWindow(self):
-        self.cpuWindow = CPUWindow()
+        self.cpuWindow = CPUWindow(user)
         self.cpuWindow.show()
 
     # open Motherboard window and list CPUs
     def openMotherboardWindow(self):
-        self.motherboardWindow = MotherboardWindow()
+        self.motherboardWindow = MotherboardWindow(user)
         self.motherboardWindow.show()
 
     # open Memory RAM window and list CPUs
     def openMemoryRAMWindow(self):
-        self.memoryRAMWindow = MemoryRAMWindow()
+        self.memoryRAMWindow = MemoryRAMWindow(user)
         self.memoryRAMWindow.show()
 
     # open gpu window and list CPUs
     def openGPUWindow(self):
-        self.gpuWindow = GPUWindow()
+        self.gpuWindow = GPUWindow(user)
         self.gpuWindow.show()
 
     # open case window and list CPUs
     def openCaseWindow(self):
-        self.caseWindow = CaseWindow()
+        self.caseWindow = CaseWindow(user)
         self.caseWindow.show()
 
     # open case window and list CPUs
     def openPowerSupplyWindow(self):
-        self.psuWindow = PSUWindow()
+        self.psuWindow = PSUWindow(user)
         self.psuWindow.show()
 
     # open case window and list CPUs
     def openStorageWindow(self):
-        self.storageWindow = StorageWindow()
+        self.storageWindow = StorageWindow(user)
         self.storageWindow.show()
 
     # open case window and list CPUs
     def openCPUCoolerWindow(self):
-        self.cpuCoolerWindow = CPUCoolerWindow()
+        self.cpuCoolerWindow = CPUCoolerWindow(user)
         self.cpuCoolerWindow.show()
 
     # open case window and list CPUs
     def openOSWindow(self):
-        self.osWindow = OSWindow()
+        self.osWindow = OSWindow(user)
         self.osWindow.show()
 
     ####### display products on the table widgets #########

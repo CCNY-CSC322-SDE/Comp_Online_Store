@@ -14,12 +14,24 @@ cur = con.cursor()
 # load registration window ui
 memoryRAMUI, _ = loadUiType("./ui/memory-ram.ui")
 productInfoUI, _ = loadUiType("./ui/product-info.ui")
+bidUI, _ = loadUiType("./ui/bid-dialog.ui")
 
+def isFloat(string):
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
+
+class BiddingDialog (QDialog, bidUI):
+    def __init__(self):
+        QDialog.__init__(self)
+        self.setupUi(self)  
 
 # ProductDetails class will initialize product-details.ui
 class MemoryRAMInfo(QWidget, productInfoUI):
     # initialize the productDetailsUI
-    def __init__(self, id):
+    def __init__(self, id, user):
         QWidget.__init__(self)
         self.setupUi(self)
 
@@ -34,6 +46,7 @@ class MemoryRAMInfo(QWidget, productInfoUI):
 
         # variable to hold the id of the product
         self.productId = id
+        self.user = user
 
         self.productUI()
 
@@ -159,17 +172,54 @@ class MemoryRAMInfo(QWidget, productInfoUI):
 
     # this method will add the selected product to the cart
     def addProductToCart(self):
-        pass
+        sql = '''SELECT COUNT(*) FROM cart WHERE account_id = ? AND product_id = ?'''
+        params = (self.user[0], self.productId)
+        cur.execute(sql, params)
+        in_cart = cur.fetchone()[0]
+        
+        msg = QMessageBox()
+        dia = BiddingDialog()
+        dia.label.setWindowTitle("Add to cart")
+        dia.label.setText("Enter product quantity")
+        dia.lineEdit.setFocus()
+        
+        entry = dia.exec_()
+        if (entry == QDialog.Accepted):
+            string = dia.lineEdit.text()
+            if(string.isnumeric()):
+                if(int(in_cart) == 1):
+                    sql = '''UPDATE cart SET amount = amount + ? WHERE account_id = ? AND product_id = ?'''
+                    params = (int(string), self.user[0], self.productId)
+                    cur.execute(sql, params)
+                else:
+                    sql = '''INSERT INTO cart VALUES (?, ?, ?)'''
+                    params = (self.user[0], self.productId, int(string))
+                    cur.execute(sql, params)
+                    
+                msg.setIcon(QMessageBox.Information)
+                msg.setText("Item added to cart.")
+                msg.setWindowTitle("Confirmation")
+                msg.exec_()
+                con.commit()
+                self.close()
+            else:
+                msg.setIcon(QMessageBox.Warning)
+                msg.setText("Please enter a valid number.")
+                msg.setWindowTitle("Error")
+                msg.exec_()
+        else:
+            return     
 
 
 # CPUWindow class will initialize the register.ui
 class MemoryRAMWindow(QWidget, memoryRAMUI):
-    def __init__(self):
+    def __init__(self, user):
         QWidget.__init__(self)
         self.setupUi(self)
 
         self.listRAMs()
         self.handleClickEvents()
+        self.user = user
 
     # handle click events
     def handleClickEvents(self):
@@ -179,7 +229,7 @@ class MemoryRAMWindow(QWidget, memoryRAMUI):
 
      # this method will create and open the product details window, when products are double clicked
     def openMemoryRAMInfoWindow(self, productId):
-        self.memoryRAMInfoWindow = MemoryRAMInfo(productId)
+        self.memoryRAMInfoWindow = MemoryRAMInfo(productId, self.user)
         self.memoryRAMInfoWindow.show()
 
     # display the list of CPUs
