@@ -14,6 +14,13 @@ from Prototypes.RegistrationWindow import RegistrationWindow
 from Prototypes.LoginWindow import LoginWindow
 from Prototypes.CPUWindow import CPUWindow
 from Prototypes.MotherboardWindow import MotherboardWindow
+from Prototypes.MemoryRAMWindow import MemoryRAMWindow
+from Prototypes.GPUWindow import GPUWindow
+from Prototypes.CaseWindow import CaseWindow
+from Prototypes.PSUWindow import PSUWindow
+from Prototypes.StorageWindow import StorageWindow
+from Prototypes.CPUCoolerWindow import CPUCoolerWindow
+from Prototypes.OSWindow import OSWindow
 
 # connect to the database and create a cursor
 con = sqlite3.connect("./Database/store_system.db")
@@ -40,6 +47,13 @@ class MainApp(QMainWindow, mainUI):
         self.productDetailsWindow = None
         self.cpuWindow = None
         self.motherboardWindow = None
+        self.memoryRAMWindow = None
+        self.gpuWindow = None
+        self.caseWindow = None
+        self.psuWindow = None
+        self.storageWindow = None
+        self.cpuCoolerWindow = None
+        self.osWindow = None
 
         # call methods
         self.mainWindowUI()
@@ -74,6 +88,13 @@ class MainApp(QMainWindow, mainUI):
         # connect buttons under components tab to methods
         self.toolButtonCPU.clicked.connect(self.openCPUWindow)
         self.toolButtonMotherboard.clicked.connect(self.openMotherboardWindow)
+        self.toolButtonMemory.clicked.connect(self.openMemoryRAMWindow)
+        self.toolButtonVideoCards.clicked.connect(self.openGPUWindow)
+        self.toolButtonCase.clicked.connect(self.openCaseWindow)
+        self.toolButtonPowerSupply.clicked.connect(self.openPowerSupplyWindow)
+        self.toolButtonStorage.clicked.connect(self.openStorageWindow)
+        self.toolButtonCPUCooler.clicked.connect(self.openCPUCoolerWindow)
+        self.toolButtonOS.clicked.connect(self.openOSWindow)
 
         ########## Handle double click events on the table items #########
 
@@ -160,6 +181,41 @@ class MainApp(QMainWindow, mainUI):
     def openMotherboardWindow(self):
         self.motherboardWindow = MotherboardWindow()
         self.motherboardWindow.show()
+
+    # open Memory RAM window and list CPUs
+    def openMemoryRAMWindow(self):
+        self.memoryRAMWindow = MemoryRAMWindow()
+        self.memoryRAMWindow.show()
+
+    # open gpu window and list CPUs
+    def openGPUWindow(self):
+        self.gpuWindow = GPUWindow()
+        self.gpuWindow.show()
+
+    # open case window and list CPUs
+    def openCaseWindow(self):
+        self.caseWindow = CaseWindow()
+        self.caseWindow.show()
+
+    # open case window and list CPUs
+    def openPowerSupplyWindow(self):
+        self.psuWindow = PSUWindow()
+        self.psuWindow.show()
+
+    # open case window and list CPUs
+    def openStorageWindow(self):
+        self.storageWindow = StorageWindow()
+        self.storageWindow.show()
+
+    # open case window and list CPUs
+    def openCPUCoolerWindow(self):
+        self.cpuCoolerWindow = CPUCoolerWindow()
+        self.cpuCoolerWindow.show()
+
+    # open case window and list CPUs
+    def openOSWindow(self):
+        self.osWindow = OSWindow()
+        self.osWindow.show()
 
     ####### display products on the table widgets #########
 
