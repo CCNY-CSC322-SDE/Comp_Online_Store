@@ -28,7 +28,119 @@ cur = con.cursor()
 
 # load the main window ui
 mainUI, _ = loadUiType("./ui/mainwindow.ui")
+cartUI, _ = loadUiType("./ui/cart.ui")
 
+
+class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the login.ui
+    def __init__(self):
+        QMainWindow.__init__(self)
+        self.setupUi(self)
+        self.subtotal = 0
+        self.cur = con.cursor()
+        self.update_cart()
+        
+        self.pushButton.clicked.connect(self.checkout)
+        self.pushButton_2.clicked.connect(self.clickme)
+    
+    def deleteItemsOfLayout(self, layout):
+        if layout is not None:
+            for i in reversed(range(layout.count())): 
+                item = layout.takeAt(i)
+                widget = item.widget()
+                if widget is not None:
+                    widget.setParent(None)
+                else:
+                    self.deleteItemsOfLayout(item.layout())
+    
+    def update_cart(self):
+        self.deleteItemsOfLayout(self.verticalLayout)
+        self.subtotal = 0
+        user_cart = fetch_cart()
+
+        count = 0;
+        for row in user_cart:
+            #TO ADD: minimum height and maximum width to widgets
+            string = 'Item Name: ' + row[0] + '\nPrice: ' + str(row[1]) + '\nAmount: ' + str(row[2]) + '\n'
+            self.subtotal += (row[1] * row[2])
+            h_layout = QHBoxLayout()
+            label = QLabel(string)
+            label.setMinimumHeight(100)
+            button = QPushButton(text="Remove", objectName= str(count) + "_remove", clicked = self.removeItem)
+            button.setMaximumWidth(100)
+            h_layout.addWidget(label)
+            h_layout.addWidget(button)
+            self.verticalLayout.addLayout(h_layout)
+            count += 1
+            
+        self.label_3.setText("Subtotal: " + str(self.subtotal))
+        
+    def clickme(self):
+        con.commit()
+        self.close()
+         
+    def removeItem(self):
+        button = self.sender()
+        index = int(re.sub('[^0-9]','', button.objectName()))
+        self.subtotal -= user_cart[index][1] * user_cart[index][2]
+        sql = '''DELETE FROM cart WHERE account_id = ? and product_id = ?'''
+        params = (user[0], user_cart[index][3])
+        self.cur.execute(sql, params)
+        self.deleteItemsOfLayout(self.verticalLayout.itemAt(index))
+        self.label_3.setText("Subtotal: " + str(self.subtotal))
+        
+        con.commit()
+        del user_cart[index]
+         
+    def checkout(self):
+        msg = QMessageBox()
+        
+        if (self.radioButton.isChecked() and self.subtotal > user[1]):
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText("Insufficient Balance.")
+            msg.setInformativeText("Please pick a different payment method.")
+            msg.setWindowTitle("Error")
+            msg.exec_()
+        elif (user[2] == 'none'):
+            #ASSUMES: user can only enter a valid credit card so credit card could only be a valid one or none
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText("No Credit Card on file.")
+            msg.setInformativeText("Please pick a different payment method.")
+            msg.setWindowTitle("Error")
+            msg.exec_()
+        else: 
+            #add transaction to transaction db
+            sql = '''INSERT INTO user_orders(account_id, subtotal, purchase_date, date_shipped, tracking_no, order_status) VALUES (?,?,?,?,?,?)'''
+            params = (user[0], self.subtotal, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "NULL", "NULL", 0)
+            self.cur.execute(sql, params)
+            transaction_id = self.cur.lastrowid
+            
+            #add purchased items to purchased items db
+            for row in user_cart:
+                sql = '''INSERT INTO purchased_items(transaction_id, item_name, amount, item_price, vote_score) VALUES (?,?,?,?,?)'''
+                params = (transaction_id, row[0], row[2], row[1], "NULL")
+                self.cur.execute(sql, params)
+					
+                sql = '''UPDATE product SET quantity_sold = quantity_sold + ? WHERE product_name = ?'''
+                params = (row[2], row[0])
+                self.cur.execute(sql, params)
+            
+            #clear user cart
+            sql = '''DELETE FROM cart WHERE account_id = ?'''
+            params = (user[0],)
+            self.cur.execute(sql, params)
+            
+            #update user balance
+            if(self.radioButton.isChecked()):
+                sql = '''UPDATE personal_acc SET balance = ? WHERE account_id = ?'''
+                params = (user[1] - self.subtotal, user[0])
+                self.cur.execute(sql, params)
+            
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("Purchase successful.")
+            msg.setInformativeText("Processing your order can take a few business days.")
+            msg.setWindowTitle("Confirmation")
+            msg.exec_()
+            self.clickme()
 
 # MainApp class will initialize the mainwindow.ui
 class MainApp(QMainWindow, mainUI):
@@ -54,6 +166,7 @@ class MainApp(QMainWindow, mainUI):
         self.storageWindow = None
         self.cpuCoolerWindow = None
         self.osWindow = None
+        self.cartWindow = None
 
         # call methods
         self.mainWindowUI()
@@ -76,6 +189,8 @@ class MainApp(QMainWindow, mainUI):
         # open search window on button clicked
         self.pushButtonSearch.clicked.connect(self.openSearchWindow)
 
+        self.pushButtonCart.clicked.connect(self.openCartWindow)
+		
         # main navigation buttons
         self.pushButtonHome.clicked.connect(self.openHomeTab)
         self.pushButtonMac.clicked.connect(self.openMacTab)
@@ -166,6 +281,12 @@ class MainApp(QMainWindow, mainUI):
         if self.searchWindow is None:
             self.searchWindow = ProductSearchWindow()
         self.searchWindow.show()
+		
+    def openCartWindow(self, checked):
+        if self.cartWindow is None:
+            self.cartWindow = CartWindow()
+        self.cartWindow.update_cart()
+        self.cartWindow.show()
 
     # this method will create and open the product details window, when products are double clicked
     def openProductInfoWindow(self, productId):
@@ -469,6 +590,17 @@ class MainApp(QMainWindow, mainUI):
         productId = listProduct[0]
         self.openProductInfoWindow(productId)
 
+
+def fetch_cart():
+    cur = con.cursor()
+    sql = '''SELECT product_name, price, amount, cart.product_id FROM cart INNER JOIN product ON cart.product_id = product.product_id WHERE account_id = ?'''
+    params = (user[0],)
+    cur.execute(sql, params)
+    rows =  cur.fetchall() 
+    return rows
+		
+user = (3, 50000, '1111-1111-1111-1111')
+user_cart =  fetch_cart() 
 
 # this main method is not inside the class, it is in the class level
 # this method shows the main window
