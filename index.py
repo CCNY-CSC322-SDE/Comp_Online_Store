@@ -20,6 +20,7 @@ from Prototypes.CaseWindow import CaseWindow
 from Prototypes.PSUWindow import PSUWindow
 from Prototypes.StorageWindow import StorageWindow
 from Prototypes.CPUCoolerWindow import CPUCoolerWindow
+from Prototypes.OSWindow import OSWindow
 
 # connect to the database and create a cursor
 con = sqlite3.connect("./Database/store_system.db")
@@ -52,6 +53,7 @@ class MainApp(QMainWindow, mainUI):
         self.psuWindow = None
         self.storageWindow = None
         self.cpuCoolerWindow = None
+        self.osWindow = None
 
         # call methods
         self.mainWindowUI()
@@ -92,6 +94,7 @@ class MainApp(QMainWindow, mainUI):
         self.toolButtonPowerSupply.clicked.connect(self.openPowerSupplyWindow)
         self.toolButtonStorage.clicked.connect(self.openStorageWindow)
         self.toolButtonCPUCooler.clicked.connect(self.openCPUCoolerWindow)
+        self.toolButtonOS.clicked.connect(self.openOSWindow)
 
         ########## Handle double click events on the table items #########
 
@@ -208,6 +211,11 @@ class MainApp(QMainWindow, mainUI):
     def openCPUCoolerWindow(self):
         self.cpuCoolerWindow = CPUCoolerWindow()
         self.cpuCoolerWindow.show()
+
+    # open case window and list CPUs
+    def openOSWindow(self):
+        self.osWindow = OSWindow()
+        self.osWindow.show()
 
     ####### display products on the table widgets #########
 
