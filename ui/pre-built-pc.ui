@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>396</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Video Cards (GPUs)</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>30</y>
+     <width>131</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>List of Pre Built PCs</string>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="tableWidgetPreBuiltPC">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>100</y>
+     <width>701</width>
+     <height>171</height>
+    </rect>
+   </property>
+   <property name="editTriggers">
+    <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+   </property>
+   <column>
+    <property name="text">
+     <string>Product ID</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Product Name</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Price</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>CPU</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>GPU</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>RAM</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Storage</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>OS</string>
+    </property>
+   </column>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
