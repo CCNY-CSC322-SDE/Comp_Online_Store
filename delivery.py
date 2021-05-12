@@ -30,8 +30,13 @@ class DeliveryApp(QMainWindow, deliveryUI):
         self.setupUi(self)
         self.handleButtons()
         self.cur = store_db.cursor()
-        self.fillTabs()
+        self.fillTab1()
+        self.fillTab2()
+        self.fillTab3()
         self.offers = []
+        self.verticalLayout.setAlignment(Qt.AlignTop)
+        self.verticalLayout_2.setAlignment(Qt.AlignTop)
+        self.verticalLayout_3.setAlignment(Qt.AlignTop)
         
     def deleteItemsOfLayout(self, layout):
         if layout is not None:
@@ -43,81 +48,81 @@ class DeliveryApp(QMainWindow, deliveryUI):
                 else:
                     self.deleteItemsOfLayout(item.layout())
                     
-    def fillTabs(self):
+    def fillTab1(self):
         self.deleteItemsOfLayout(self.verticalLayout)
-        self.deleteItemsOfLayout(self.verticalLayout_2)
-        self.deleteItemsOfLayout(self.verticalLayout_3)
 
-        sql = '''SELECT first_name, last_name, address, subtotal, purchase_date, user_orders.transaction_id FROM user_orders LEFT JOIN personal_acc ON user_orders.account_id = personal_acc.account_id WHERE order_status = 0 AND user_orders.transaction_id != (SELECT user_orders.transaction_id FROM user_orders LEFT JOIN bid_offers ON user_orders.transaction_id = bid_offers.transaction_id WHERE bid_offers.account_id = ? OR bid_offers.account_id = NULL)'''
-        #sql = '''SELECT first_name, last_name, address, subtotal, purchase_date, user_orders.transaction_id FROM user_orders LEFT JOIN personal_acc ON user_orders.account_id = personal_acc.account_id WHERE order_status = 0'''
-        params = (user[0],)
+        sql = '''SELECT first_name, last_name, address, subtotal, purchase_date, user_orders.transaction_id FROM user_orders LEFT JOIN personal_acc ON user_orders.account_id = personal_acc.account_id WHERE order_status = 0 AND (user_orders.transaction_id != (SELECT user_orders.transaction_id FROM user_orders LEFT JOIN bid_offers ON user_orders.transaction_id = bid_offers.transaction_id WHERE bid_offers.account_id = ?) OR (SELECT user_orders.transaction_id FROM user_orders LEFT JOIN bid_offers ON user_orders.transaction_id = bid_offers.transaction_id WHERE bid_offers.account_id = ?) IS NULL)'''
+        params = (user[0], user[0])
         self.cur.execute(sql, params)
         self.orders_no_bid = self.cur.fetchall()
         
-        
-        #sql = '''SELECT first_name, last_name, address, subtotal, purchase_date, bid_amount FROM user_orders LEFT JOIN personal_acc ON user_orders.account_id = personal_acc.account_id WHERE order_status = 0 AND transaction_id = (SELECT user_orders.transaction_id FROM user_orders LEFT JOIN bid_offers ON user_orders.transaction_id = bid_offers.transaction_id WHERE bid_offers.account_id = ?)'''
-        sql = '''SELECT first_name, last_name, address, subtotal, purchase_date, bid_amount, user_orders.transaction_id FROM user_orders LEFT JOIN personal_acc ON user_orders.account_id = personal_acc.account_id LEFT JOIN bid_offers ON user_orders.transaction_id = bid_offers.transaction_id WHERE order_status = 0 AND bid_offers.account_id = ?'''
-        params = (user[0],)
-        self.cur.execute(sql, params)
-        self.orders_bid = self.cur.fetchall()
-        
-        #OPTIONAL: optimize
-        #for row in orders_no_bid:
-         #   if(row[6
-        
-        sql = '''SELECT first_name, last_name, address, subtotal, purchase_date, transaction_id FROM user_orders LEFT JOIN personal_acc ON user_orders.account_id = personal_acc.account_id WHERE shipper == ? AND order_status != 2'''
-        params = (user[1],)
-        self.cur.execute(sql, params)
-        self.orders_to_ship = self.cur.fetchall()
-            
         if(len(self.orders_no_bid) == 0):
             label = QLabel('No Open Orders.')
             self.verticalLayout.addWidget(label)
         else:
             iter = 0
             for row in self.orders_no_bid:
-                #TO ADD: minimum height and maximum width to widgets
-                string = 'Name: ' + row[0] + ' ' + row[1] + '\nAddress: ' + row[2] + '\nSubtotal: ' + str(row[3]) + '\nDate Purchased: ' + row[4] + '\n'
+                string = 'Name: ' + row[0] + ' ' + row[1] + '\nAddress: ' + row[2] + '\nSubtotal: ' + str(round(row[3],2)) + '\nDate Purchased: ' + row[4] + '\n'
                 h_layout = QHBoxLayout()
                 label = QLabel(string)
+                label.setMinimumHeight(100)
                 button = QPushButton(text="Put Offer", objectName= str(iter) + "_pick", clicked = self.pickOffer)
+                button.setMaximumWidth(100)
                 h_layout.addWidget(label)
                 h_layout.addWidget(button)
                 self.verticalLayout.addLayout(h_layout)
                 iter += 1
                 
+    def fillTab2(self):    
+        self.deleteItemsOfLayout(self.verticalLayout_2)
+        
+        sql = '''SELECT first_name, last_name, address, subtotal, purchase_date, bid_amount, user_orders.transaction_id FROM user_orders LEFT JOIN personal_acc ON user_orders.account_id = personal_acc.account_id LEFT JOIN bid_offers ON user_orders.transaction_id = bid_offers.transaction_id WHERE order_status = 0 AND bid_offers.account_id = ?'''
+        params = (user[0],)
+        self.cur.execute(sql, params)
+        self.orders_bid = self.cur.fetchall()
+        
         if(len(self.orders_bid) == 0):
             label = QLabel('No Pending Bids.')
             self.verticalLayout_2.addWidget(label)
         else:
             iter = 0
             for row in self.orders_bid:
-                #TO ADD: minimum height and maximum width to widgets
-                string = 'Name: ' + row[0] + ' ' + row[1] + '\nAddress: ' + row[2] + '\nSubtotal: ' + str(row[3]) + '\nDate Purchased: ' + row[4] + '\n'
+                string = 'Name: ' + row[0] + ' ' + row[1] + '\nAddress: ' + row[2] + '\nSubtotal: ' + str(round(row[3],2)) + '\nDate Purchased: ' + row[4] + '\n'
                 h_layout = QHBoxLayout()
                 label = QLabel(string)
+                label.setMinimumHeight(100)
                 label_2 = QLabel('Bid Offer: ' + str(row[5]))
+                label.setMinimumHeight(100)
                 h_layout.addWidget(label)
                 h_layout.addWidget(label_2)
                 self.verticalLayout_2.addLayout(h_layout)
                 iter += 1
-                
+        
+    def fillTab3(self):
+        self.deleteItemsOfLayout(self.verticalLayout_3)
+        
+        sql = '''SELECT first_name, last_name, address, subtotal, purchase_date, transaction_id FROM user_orders LEFT JOIN personal_acc ON user_orders.account_id = personal_acc.account_id WHERE shipper == ? AND order_status != 2'''
+        params = (user[1],)
+        self.cur.execute(sql, params)
+        self.orders_to_ship = self.cur.fetchall()
+        
         if(len(self.orders_to_ship) == 0):
             label = QLabel('No Won Bids to Ship.')
             self.verticalLayout_3.addWidget(label)
         else:
             iter = 0
             for row in self.orders_to_ship:
-                #TO ADD: minimum height and maximum width to widgets
-                string = 'Name: ' + row[0] + ' ' + row[1] + '\nAddress: ' + row[2] + '\nSubtotal: ' + str(row[3]) + '\nDate Purchased: ' + row[4] + '\n'
+                string = 'Name: ' + row[0] + ' ' + row[1] + '\nAddress: ' + row[2] + '\nSubtotal: ' + str(round(row[3],2)) + '\nDate Purchased: ' + row[4] + '\n'
                 h_layout = QHBoxLayout()
                 label = QLabel(string)
+                label.setMinimumHeight(100)
                 button = QPushButton(text="Ship Order", objectName= str(iter) + "_", clicked = self.shipOrder)
+                button.setMaximumWidth(100)
                 h_layout.addWidget(label)
                 h_layout.addWidget(button)
                 self.verticalLayout_3.addLayout(h_layout)
                 iter += 1
-
+        
         
     def pickOffer(self):
         button = self.sender()
@@ -125,41 +130,30 @@ class DeliveryApp(QMainWindow, deliveryUI):
         msg = QMessageBox()
         
         dia = BiddingDialog()
+        dia.setWindowTitle("Bid Offer")
         entry = dia.exec_()
         if (entry == QDialog.Accepted):
             string = dia.lineEdit.text()
-            #TO ADD: string checker for valid bid offer
-            #TO ADD: setting precision for floats
-            sql = '''INSERT INTO bid_offers VALUES (?, ?, ?)'''
-            params = (user[0], self.orders_no_bid[index][5], float(string))
-            self.cur.execute(sql, params)
-            msg.setIcon(QMessageBox.Information)
-            msg.setText("Bid Offer sent.")
-            msg.setInformativeText("If your offer wins, it will show in the won bids tab.")
-            msg.setWindowTitle("Confirmation")
-            msg.exec_()
+            if(isFloat(string)):
+                sql = '''INSERT INTO bid_offers VALUES (?, ?, ?)'''
+                params = (user[0], self.orders_no_bid[index][5], float(string))
+                self.cur.execute(sql, params)
+                msg.setIcon(QMessageBox.Information)
+                msg.setText("Bid Offer sent.")
+                msg.setInformativeText("If your offer wins, it will show in the won bids tab.")
+                msg.setWindowTitle("Confirmation")
+                msg.exec_()
+            else:
+                msg.setIcon(QMessageBox.Warning)
+                msg.setText("Please enter a number.")
+                msg.setWindowTitle("Error")
+                msg.exec_()
         else:
-            return
-        
-        item = self.verticalLayout.itemAt(index).takeAt(0)
-        label = item.widget()
-        if label is not None:
-            label.setParent(None)
-        h_layout = QHBoxLayout()
-        h_layout.addWidget(label)
-        label_2 = QLabel('Bid Offer: ' + string)
-        h_layout.addWidget(label_2)
-        if(len(self.orders_bid) == 0):
-            self.deleteItemsOfLayout(self.verticalLayout_2)
-        self.verticalLayout_2.addLayout(h_layout)
-        self.deleteItemsOfLayout(self.verticalLayout.itemAt(index))
-        self.orders_bid.append(self.orders_no_bid[index])
-        del self.orders_no_bid[index]
-        if(len(self.orders_no_bid) == 0):
-            label = QLabel('No Open Orders.')
-            self.verticalLayout.addWidget(label)    
+            return   
         
         store_db.commit()
+        self.fillTab1()
+        self.fillTab2()
         
     def shipOrder(self):
         button = self.sender()
@@ -167,32 +161,34 @@ class DeliveryApp(QMainWindow, deliveryUI):
         msg = QMessageBox()
         
         dia = TrackingDialog()
+        dia.setWindowTitle("Tracking")
         entry = dia.exec_()
         if (entry == QDialog.Accepted):
             string = dia.lineEdit.text()
-            #TO ADD: string checker for valid tracking no
-            sql = '''UPDATE user_orders SET date_shipped = ?, tracking_no = ?, order_status = 2 WHERE transaction_id = ?'''
-            params = (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), int(string), self.orders_to_ship[index][5])
-            self.cur.execute(sql, params)
-            msg.setIcon(QMessageBox.Information)
-            msg.setText("Order shipped.")
-            msg.setInformativeText("The user is notified of their tracking number.")
-            msg.setWindowTitle("Confirmation")
-            msg.exec_()
+            if(string.isnumeric()):
+                sql = '''UPDATE user_orders SET date_shipped = ?, tracking_no = ?, order_status = 2 WHERE transaction_id = ?'''
+                params = (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), int(string), self.orders_to_ship[index][5])
+                self.cur.execute(sql, params)
+                msg.setIcon(QMessageBox.Information)
+                msg.setText("Order shipped.")
+                msg.setInformativeText("The user is notified of their tracking number.")
+                msg.setWindowTitle("Confirmation")
+                msg.exec_()
+            else:
+                msg.setIcon(QMessageBox.Warning)
+                msg.setText("Please enter a valid tracking number.")
+                msg.setWindowTitle("Error")
+                msg.exec_()
         else:
             return
         
-        
-        self.deleteItemsOfLayout(self.verticalLayout_3.itemAt(index))
-        del self.orders_to_ship[index]
-        if(len(self.orders_to_ship) == 0):
-            label = QLabel('No Won Bids to Ship.')
-            self.verticalLayout_3.addWidget(label)
-        
         store_db.commit()
+        self.fillTab3()
         
     def refresh(self):
-        self.fillTabs()
+        self.fillTab1()
+        self.fillTab2()
+        self.fillTab3()
     
     def pickOrder(self):
         return
@@ -215,11 +211,18 @@ def fetch_open_orders():
     cur.execute(sql)
     rows =  cur.fetchall() 
     return rows
+    
+def isFloat(string):
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
    
 database = r"./Database/store_system.db"
 store_db = create_connection(database)
 #TEMP VARIABLE: placeholder until login system is coded
-user = (3, 'shipper')
+user = (6, 'shipper')
         
 # this main method is not inside the class, it is in the class level
 # this method shows the main window

@@ -28,7 +28,7 @@ class ClerkApp(QMainWindow, clerkUI):
         self.cur = store_db.cursor()
         self.offers = []
         self.comboBoxBids.currentIndexChanged.connect(self.fillTab)
-        
+        self.verticalLayout.setAlignment(Qt.AlignTop)
         
     def fillComboBox(self):
         global open_orders
@@ -62,11 +62,12 @@ class ClerkApp(QMainWindow, clerkUI):
             else:
                 iter = 0
                 for row in self.offers:
-                    #TO ADD: minimum height and maximum width to widgets
                     string = 'Company Name: ' + row[1] + '\nBid Amount: ' + str(row[2]) + '\n'
                     h_layout = QHBoxLayout()
                     label = QLabel(string)
+                    label.setMinimumHeight(100)
                     button = QPushButton(text="Pick Bid", objectName= str(iter) + "_pick", clicked = self.pickBid)
+                    button.setMaximumWidth(100)
                     h_layout.addWidget(label)
                     h_layout.addWidget(button)
                     self.verticalLayout.addLayout(h_layout)
@@ -80,44 +81,61 @@ class ClerkApp(QMainWindow, clerkUI):
         index = int(re.sub('[^0-9]','', button.objectName()))
         msg = QMessageBox()
         global open_orders
+        valid_transaction = True
         
         #check if not smallest bid
         if(index > 0):
             dia = JustificationDialog()
             entry = dia.exec_()
             if (entry == QDialog.Accepted):
-                #TO ADD: string checker for 255 characters here
-                sql = '''INSERT INTO complaint(offender_id, filed_on, claim) VALUES (?, ?, ?)'''
-                params = (user[0], datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), dia.textEdit.toPlainText())
-                self.cur.execute(sql, params)
-                msg.setIcon(QMessageBox.Information)
-                msg.setText("Justification sent successfully.")
-                msg.setInformativeText("A warning will be given if your appeal is rejected.")
-                msg.setWindowTitle("Confirmation")
-                msg.exec_()
+                string = dia.textEdit.toPlainText()
+                if(len(string) == 0):
+                    msg.setIcon(QMessageBox.Warning)
+                    msg.setText("Operation Aborted. Try again.")
+                    msg.setInformativeText("Please enter a justification.")
+                    msg.setWindowTitle("Error")
+                    msg.exec_()
+                    valid_transaction = False
+                elif(len(string) > 255):
+                    msg.setIcon(QMessageBox.Warning)
+                    msg.setText("Operation Aborted. Try again.")
+                    msg.setInformativeText("Justification is too long.")
+                    msg.setWindowTitle("Error")
+                    msg.exec_()
+                    valid_transaction = False
+                else:
+                    sql = '''INSERT INTO complaint(offender_id, filed_on, claim, counter_claim) VALUES (?, ?, ?, ?)'''
+                    params = (user[0], datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "Did not pick the cheapest bid", dia.textEdit.toPlainText())
+                    self.cur.execute(sql, params)
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText("Justification sent successfully.")
+                    msg.setInformativeText("A warning will be given if your appeal is rejected.")
+                    msg.setWindowTitle("Confirmation")
+                    msg.exec_()
             else:
                 return
-                
-        #set order status to 1 and shipper to bid winner
-        sql = '''UPDATE user_orders SET order_status = 1, shipper = ? WHERE transaction_id = ?'''
-        params = (self.offers[index][1], open_orders[self.comboBoxBids.currentIndex() - 1][0])
-        self.cur.execute(sql, params)
-        
-        #delete bids for transaction
-        sql = '''DELETE FROM bid_offers WHERE transaction_id = ?'''
-        params = (open_orders[self.comboBoxBids.currentIndex() - 1][0],)
-        self.cur.execute(sql, params)
+            
+        if(valid_transaction):
+            #set order status to 1 and shipper to bid winner
+            sql = '''UPDATE user_orders SET order_status = 1, shipper = ? WHERE transaction_id = ?'''
+            params = (self.offers[index][1], open_orders[self.comboBoxBids.currentIndex() - 1][0])
+            self.cur.execute(sql, params)
+            
+            #delete bids for transaction
+            sql = '''DELETE FROM bid_offers WHERE transaction_id = ?'''
+            params = (open_orders[self.comboBoxBids.currentIndex() - 1][0],)
+            self.cur.execute(sql, params)
 
-        msg.setIcon(QMessageBox.Information)
-        msg.setText("Picked Winner.")
-        msg.setInformativeText("Update successful.")
-        msg.setWindowTitle("Confirmation")
-        msg.exec_()
-        
-        del open_orders[self.comboBoxBids.currentIndex() - 1]
-        self.comboBoxBids.removeItem(self.comboBoxBids.currentIndex())
-        
-        store_db.commit()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("Picked Winner.")
+            msg.setInformativeText("Update successful.")
+            msg.setWindowTitle("Confirmation")
+            msg.exec_()
+            
+            del open_orders[self.comboBoxBids.currentIndex() - 1]
+            self.comboBoxBids.removeItem(self.comboBoxBids.currentIndex())
+            
+            store_db.commit()
         
     def refresh(self):
         global open_orders
@@ -149,7 +167,7 @@ def fetch_open_orders():
 database = r"./Database/store_system.db"
 store_db = create_connection(database)
 #TEMP VARIABLE: placeholder until login system is coded
-user = (5, 'ima', 'clerk')
+user = (8, 'clerk', 'man')
 open_orders = fetch_open_orders()
         
 # this main method is not inside the class, it is in the class level
