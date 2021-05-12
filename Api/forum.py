@@ -8,9 +8,11 @@ from Models.Forums import ForumReply
 database = r"./Database/store_system.db"
 store_db = None
 
+
 def initialize():
     global store_db
     store_db = create_connection(database)
+
 
 def create_connection(db_file):
     conn = None
@@ -37,13 +39,13 @@ def getThreads():
     return results
 
 
-def createThread(product_name,account_id,title):
+def createThread(product_name, account_id, title):
     if store_db == None:
         initialize()
     with store_db:
         cur = store_db.cursor()
         sql = '''INSERT INTO forum_thread (product_name,account_id,title) VALUES(?, ?, ?)'''
-        cur.execute(sql,(product_name,account_id,title))
+        cur.execute(sql, (product_name, account_id, title))
 
 
 def getThreadReplies(thread_no):
@@ -53,7 +55,7 @@ def getThreadReplies(thread_no):
     with store_db:
         cur = store_db.cursor()
         sql = '''SELECT * FROM forum_reply WHERE thread_no = ?'''
-        cur.execute(sql,(thread_no))
+        cur.execute(sql, (thread_no,))
 
         rows = cur.fetchall()
         for row in rows:
@@ -71,16 +73,18 @@ def createReply(thread_no, account_id, post):
         rows = cur.fetchall()
 
         # Look for taboo words and redact if anything.
-        words = post.lower().trim().split(" ")
+        originalWords = post.split(" ")
+        words = post.lower().split(" ")
         newPost = ""
         foundTaboo = False
-        for row in rows:
-            for word in words:
-                if row[0] in word:
-                    newPost = newPost + " * "
+        for idx, word in enumerate(words):
+            for row in rows:
+                if row[0] in word or word in row[0]:
+                    originalWords[idx] = "*"
                     foundTaboo = True
-                else:
-                    newPost = newPost + " " + word + " "
+            newPost = newPost + " " + originalWords[idx] + " "
+        newPost = newPost.strip()
+        print("API TExt to be inserted {text}".format(text=newPost))
         if foundTaboo:
             createWarning(offender_id=account_id, reason="Taboo word found in post")
         # Finally insert reply to database
@@ -98,9 +102,11 @@ def createWarning(offender_id, reason):
         sql = '''INSERT INTO warning(offender_id,reason) VALUES(?,?)'''
         cur.execute(sql, (offender_id, reason))
 
+        account.AddWarningCount(offender_id)
+
         # Check if they have 3 warnings. If so ban account
         sql = '''SELECT * FROM warning WHERE offender_id=?'''
-        cur.execute(sql, (offender_id))
-        if cur.rows() >= 3:
+        cur.execute(sql, (offender_id,))
+        if len(cur.fetchall()) >= 3:
             account.suspendAccount(offender_id)
         account.updateAccountStatus(offender_id)

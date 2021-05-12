@@ -6,10 +6,11 @@ class BaseAccount:
 
 
 class Account(BaseAccount):
-    def __init__(self, account_id, email, acc_status, password):
+    def __init__(self, account_id, email, acc_status, warnings, password):
         self.account_id = account_id
         self.email = email
         self.acc_status = acc_status
+        self.warnings = warnings
         self.password = password
 
 
@@ -32,11 +33,11 @@ class ClerkAccount(BaseAccount):
 
 
 class ManagerAccount(BaseAccount):
-    def __init__(self,account_id,first_name,last_name):
-        BaseAccount.__init__(self,account_id,first_name,last_name)
+    def __init__(self, account_id, first_name, last_name):
+        BaseAccount.__init__(self, account_id, first_name, last_name)
 
 
 class SupplierAccount:
-    def __init__(self,account_id,company_name):
+    def __init__(self, account_id, company_name):
         self.account_id = account_id
         self.company_name = company_name
