@@ -308,9 +308,9 @@ class MainApp(QMainWindow, mainUI):
             self.loginWindow = LoginWindow()
         self.loginWindow.show()
 
-    # this method will create and open the login window, when Login pushButton is clicked
     def openSearchWindow(self, checked):
         if self.searchWindow is None:
+            searchQuery = "Macbook Pro"
             self.searchWindow = ProductSearchWindow()
         self.searchWindow.show()
 
