@@ -37,7 +37,7 @@ cur = con.cursor()
 mainUI, _ = loadUiType("./ui/mainwindow.ui")
 cartUI, _ = loadUiType("./ui/cart.ui")
 loginUI, _ = loadUiType("./ui/login-dialog.ui")
-
+ 
 class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the login.ui
     def __init__(self):
         QMainWindow.__init__(self)

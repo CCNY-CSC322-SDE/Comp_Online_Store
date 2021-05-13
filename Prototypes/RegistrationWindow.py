@@ -72,7 +72,7 @@ class RegistrationWindow(QWidget, registerUI):
                         store_db.commit()
                         self.close_window()
 
-    # Display error messages
+    # Display error messages 
     def showMessage(self, msg):
         msgBox = QtWidgets.QMessageBox()
         msgBox.setIcon(QtWidgets.QMessageBox.Information)
