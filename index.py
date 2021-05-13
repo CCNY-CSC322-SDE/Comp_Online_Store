@@ -44,7 +44,6 @@ loginUI, _ = loadUiType("./ui/login-dialog.ui")
 logoutUI, _ = loadUiType("./ui/logout-dialog.ui")
 accinfoUI, _ = loadUiType("./ui/account-info.ui")
 
-
 class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the login.ui
     def __init__(self):
         QMainWindow.__init__(self)
@@ -169,7 +168,7 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
             self.close_window()
 
 
-class LoginDialog(QDialog, loginUI):  # INCOMPLETE: NEED TO CHECK IF USER IS BANNED
+class LoginDialog(QDialog, loginUI):
     def __init__(self, parent):
         QDialog.__init__(self)
         self.setupUi(self)
@@ -184,7 +183,8 @@ class LoginDialog(QDialog, loginUI):  # INCOMPLETE: NEED TO CHECK IF USER IS BAN
         self.param[1] = self.lineEditPassword.text()
         if(self.checkEmail()):
             if(self.validEmail()):
-                self.validate_password()
+                if(self.rightAccType()):
+                    self.validate_password()
 
     def checkEmail(self):
         regex_email = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
@@ -215,6 +215,17 @@ class LoginDialog(QDialog, loginUI):  # INCOMPLETE: NEED TO CHECK IF USER IS BAN
         else:
             return True
 
+    def rightAccType(self):
+        sql = '''SELECT personal_acc.account_id FROM account LEFT JOIN personal_acc ON account.account_id = personal_acc.account_id WHERE email = ? AND address IS NOT NULL'''
+        params = (self.param[0],)
+        self.cur.execute(sql, params)
+        row = self.cur.fetchone()
+        if(row is not None):
+            return True
+        else:
+            self.showMessage("User is not a personal account.")
+            return False
+        
     def validate_password(self):
         hash_params = ""
         row = None

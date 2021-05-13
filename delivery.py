@@ -3,6 +3,9 @@ import PyQt5
 import sqlite3
 import datetime
 import re
+import binascii
+import pyscrypt
+import os
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -12,7 +15,131 @@ from sqlite3 import Error
 # load the UIs
 deliveryUI, _ = loadUiType("./ui/delivery.ui")
 bidUI, _ = loadUiType("./ui/bid-dialog.ui")
+loginUI, _ = loadUiType("./ui/login-dialog.ui")
+logoutUI, _ = loadUiType("./ui/logout-dialog.ui")
 trackingUI, _ = loadUiType("./ui/track-no-dialog.ui")
+
+class LoginDialog(QDialog, loginUI):
+    def __init__(self, parent):
+        QDialog.__init__(self)
+        self.setupUi(self)
+        self.cur = store_db.cursor()
+        self.param = [None] * 2
+        self.pushButtonCancel.clicked.connect(self.close_window)
+        self.pushButtonLogin.clicked.connect(self.login)
+        self.parent = parent
+
+    def login(self):
+        self.param[0] = self.lineEditEmailAddress.text()
+        self.param[1] = self.lineEditPassword.text()
+        if(self.checkEmail()):
+            if(self.validEmail()):
+                if(self.rightAccType()):
+                    self.validate_password()
+
+    def checkEmail(self):
+        regex_email = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
+        if (re.search(regex_email, self.param[0])):
+            return True
+        else:
+            self.showMessage("Error: Please enter a valid email.")
+            return False
+            
+    def rightAccType(self):
+        sql = '''SELECT delivery_acc.account_id FROM account LEFT JOIN delivery_acc ON account.account_id = delivery_acc.account_id WHERE email = ? AND company_name IS NOT NULL'''
+        params = (self.param[0],)
+        self.cur.execute(sql, params)
+        row = self.cur.fetchone()
+        if(row is not None):
+            return True
+        else:
+            self.showMessage("User is not a delivery account.")
+            return False
+            
+    def validEmail(self):
+        sql = '''SELECT banned_emails, is_permaban, sent_notif FROM avoid_list WHERE banned_emails = ?'''
+        params = (self.param[0],)
+        self.cur.execute(sql, params)
+        row = self.cur.fetchone()
+        if(row is not None):
+            if(row[1]):
+                self.showMessage("User is permanently banned.")
+            else:
+                self.showMessage("User is suspended.")
+            if(not row[2]):
+                self.showMessage("Email is sent regarding details.")
+                sql = '''UPDATE avoid_list SET sent_notif = 1 WHERE banned_emails = ?'''
+                params = (self.param[0],)
+                self.cur.execute(sql, params)
+                
+            return False
+            store_db.commit()
+        else:
+            return True
+
+    def validate_password(self):
+        hash_params = ""
+        row = None
+        sql = '''SELECT account_id, password FROM account WHERE email = ?'''
+        params = (self.param[0],)
+        self.cur.execute(sql, params)
+
+        if (self.param[1] != ""):
+            row = self.cur.fetchone()
+            if (row is not None):
+                hash_params = row[1].split("|")
+                if (hash_params[5] == str(
+                        self.hash_password(self.param[1], hash_params[0], hash_params[1], hash_params[2],
+                                           hash_params[3], hash_params[4]))):
+                    self.showMessage("Login Successful.")
+                    self.loadData(row[0])
+                else:
+                    self.showMessage("Password does not match.")
+            else:
+                self.showMessage("Error: Account does not exist.")
+        else:
+            self.showMessage("Please enter a password.")
+
+    def showMessage(self, msg):
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Information)
+        msgBox.setText(msg)
+        msgBox.setStandardButtons(QMessageBox.Ok)
+        msgBox.exec_()
+
+    def hash_password(self, string, param0, param1, param2, param3, param4):
+        # Hash
+        hashed = pyscrypt.hash(password=bytes(string, 'utf-8'),
+                               salt=bytes(param4, 'utf-8'),
+                               N=int(param0),
+                               r=int(param1),
+                               p=int(param2),
+                               dkLen=int(param3))
+
+        return hashed.hex()
+
+    def loadData(self, acc_id):
+        global user
+        global cur
+        sql = '''SELECT account.account_id, company_name FROM account LEFT JOIN delivery_acc ON account.account_id = delivery_acc.account_id WHERE account.account_id = ?'''
+        params = (acc_id,)
+        self.cur.execute(sql, params)
+        user = self.cur.fetchone()
+        self.close_window()
+        self.parent.login_button_change()
+        self.parent.fillTab1()
+        self.parent.fillTab2()
+        self.parent.fillTab3()
+
+    def close_window(self):
+        self.lineEditEmailAddress.setText("")
+        self.lineEditPassword.setText("")
+        self.close()
+        
+class LogoutDialog(QDialog, logoutUI):
+    def __init__(self):
+        QDialog.__init__(self)
+        self.setupUi(self)
         
 class BiddingDialog (QDialog, bidUI):
     def __init__(self):
@@ -30,10 +157,8 @@ class DeliveryApp(QMainWindow, deliveryUI):
         self.setupUi(self)
         self.handleButtons()
         self.cur = store_db.cursor()
-        self.fillTab1()
-        self.fillTab2()
-        self.fillTab3()
         self.offers = []
+        self.loginWindow = None
         self.verticalLayout.setAlignment(Qt.AlignTop)
         self.verticalLayout_2.setAlignment(Qt.AlignTop)
         self.verticalLayout_3.setAlignment(Qt.AlignTop)
@@ -123,7 +248,6 @@ class DeliveryApp(QMainWindow, deliveryUI):
                 self.verticalLayout_3.addLayout(h_layout)
                 iter += 1
         
-        
     def pickOffer(self):
         button = self.sender()
         index = int(re.sub('[^0-9]','', button.objectName()))
@@ -194,7 +318,38 @@ class DeliveryApp(QMainWindow, deliveryUI):
         return
     
     def handleButtons(self):
-        self.pushButtonRefresh.clicked.connect(self.refresh) 
+        self.pushButtonLogin.clicked.connect(self.openLoginWindow)
+        self.pushButtonRefresh.clicked.connect(self.refresh)        
+        self.pushButtonLogout.clicked.connect(self.logout)
+        self.pushButtonLogout.hide()
+        
+    def openLoginWindow(self, checked):
+        if self.loginWindow is None:
+            self.loginWindow = LoginDialog(parent=self)
+        self.loginWindow.exec_()
+        
+    def login_button_change(self):
+        self.pushButtonLogin.hide()
+        self.pushButtonLogout.show()
+        
+    def logout(self):
+        dia = LogoutDialog()
+        dia.setWindowTitle("Logout")
+        entry = dia.exec_()
+        msg = QMessageBox()
+        if (entry == QDialog.Accepted):
+            user = [None] * 2
+            self.pushButtonLogin.show()
+            self.pushButtonLogout.hide()
+            self.deleteItemsOfLayout(self.verticalLayout)
+            self.deleteItemsOfLayout(self.verticalLayout_2)
+            self.deleteItemsOfLayout(self.verticalLayout_3)
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("Logged out.")
+            msg.setWindowTitle("Confirmation")
+            msg.exec_()
+        else:
+            return
 
 def create_connection(db_file):
     conn = None
@@ -222,7 +377,7 @@ def isFloat(string):
 database = r"./Database/store_system.db"
 store_db = create_connection(database)
 #TEMP VARIABLE: placeholder until login system is coded
-user = (6, 'shipper')
+user = [None] * 2
         
 # this main method is not inside the class, it is in the class level
 # this method shows the main window
