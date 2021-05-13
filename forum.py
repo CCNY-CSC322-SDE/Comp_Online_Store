@@ -5,6 +5,7 @@ from Api import account
 from Api import product as productApi
 from PyQt5.QtWidgets import *
 import complain
+import index
 
 
 # Need to swtich accound_id for some of these to the log in value. I've been hardcoding it.
@@ -53,7 +54,7 @@ class ReplyListItem(QWidget):
         self.setLayout(layout)
 
     def openComplain(self):
-        complainWindow = complain.ComplainWindow(parent=self, account_id=2, offender_id=self.commentAccount.account_id)
+        complainWindow = complain.ComplainWindow(parent=self, account_id=index.user[0], offender_id=self.commentAccount.account_id)
         complainWindow.show()
 
 
@@ -98,7 +99,7 @@ class ForumThread(QMainWindow):
     def createReply(self):
         text = str(self.postTextEdit.toPlainText()).strip()
         if len(text) > 0:
-            forum.createReply(self.thread_no, 3, text)
+            forum.createReply(self.thread_no, index.user[0], text)
             self.postTextEdit.setText("")
             self.getThreadReplies()
 
@@ -163,7 +164,7 @@ class ForumApp(QMainWindow):
         forumText = str(self.forumTextEdit.text()).strip()
         productText = str(self.productDropdown.currentText())
         if len(forumText) > 0 and len(productText) > 0:
-            forum.createThread(productText, 0, forumText)
+            forum.createThread(productText, index.user[0], forumText)
             self.forumTextEdit.setText("")
             self.setUpForumList()
 
