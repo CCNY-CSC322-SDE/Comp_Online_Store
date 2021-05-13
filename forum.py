@@ -5,14 +5,13 @@ from Api import account
 from Api import product as productApi
 from PyQt5.QtWidgets import *
 import complain
-import index
 
 
-# Need to swtich accound_id for some of these to the log in value. I've been hardcoding it.
 class ForumListItem(QWidget):
-    def __init__(self, parent=None, forum_thread=None):
+    def __init__(self, parent=None, forum_thread=None, user=None):
         super(ForumListItem, self).__init__(parent)
         self.forumThread = forum_thread
+        self.user = user
         layout = QVBoxLayout()
         self.threadItemBoxLayout = QHBoxLayout()
         self.titleLabel = QLabel(forum_thread.title)
@@ -27,18 +26,19 @@ class ForumListItem(QWidget):
         self.setLayout(layout)
 
     def mouseDoubleClickEvent(self, event):
-        thread = ForumThread(parent=self, thread_no=self.forumThread.thread_no)
+        thread = ForumThread(parent=self, thread_no=self.forumThread.thread_no, user=self.user)
         thread.show()
 
 
 class ReplyListItem(QWidget):
-    def __init__(self, parent=None, forumReply=None, personalAccount=None):
+    def __init__(self, parent=None, forumReply=None, personalAccount=None, user=None):
         super(ReplyListItem, self).__init__(parent)
         self.forumReply = forumReply
         self.commentAccount = personalAccount
         self.threadItemBoxLayout = QVBoxLayout()
         self.authorLabel = QLabel()
         self.postLabel = QLabel()
+        self.user = user
         self.complainButton = QPushButton("Report")
         layout = QHBoxLayout()
 
@@ -54,14 +54,16 @@ class ReplyListItem(QWidget):
         self.setLayout(layout)
 
     def openComplain(self):
-        complainWindow = complain.ComplainWindow(parent=self, account_id=index.user[0], offender_id=self.commentAccount.account_id)
+        complainWindow = complain.ComplainWindow(parent=self, account_id=self.user[0],
+                                                 offender_id=self.commentAccount.account_id)
         complainWindow.show()
 
 
 class ForumThread(QMainWindow):
-    def __init__(self, parent=None, thread_no=0):
+    def __init__(self, parent=None, thread_no=0, user=None):
         super(ForumThread, self).__init__(parent)
         self.thread_no = thread_no
+        self.user = user
         self.postTextEdit = QTextEdit()
         self.forumRepliesListWidget = QListWidget()
         self.createReplyButton = QPushButton()
@@ -90,7 +92,7 @@ class ForumThread(QMainWindow):
         self.forumRepliesListWidget.clear()
         for reply in replies:
             personalAccount = account.getPersonalAccount(reply.account_id)
-            replyItem = ReplyListItem(parent=None, forumReply=reply, personalAccount=personalAccount)
+            replyItem = ReplyListItem(parent=None, forumReply=reply, personalAccount=personalAccount, user=self.user)
             qListWidgetItem = QListWidgetItem(self.forumRepliesListWidget)
             qListWidgetItem.setSizeHint(replyItem.sizeHint())
             self.forumRepliesListWidget.addItem(qListWidgetItem)
@@ -99,14 +101,15 @@ class ForumThread(QMainWindow):
     def createReply(self):
         text = str(self.postTextEdit.toPlainText()).strip()
         if len(text) > 0:
-            forum.createReply(self.thread_no, index.user[0], text)
+            forum.createReply(self.thread_no, self.user[0], text)
             self.postTextEdit.setText("")
             self.getThreadReplies()
 
 
 class ForumApp(QMainWindow):
-    def __init__(self,parent=None):
+    def __init__(self, parent=None, user=None):
         super(ForumApp, self).__init__(parent)
+        self.user = user
         self.setWindowTitle("Forum")
         self.setFixedWidth(800)
         self.setFixedHeight(600)
@@ -145,7 +148,7 @@ class ForumApp(QMainWindow):
         threads = forum.getThreads()
         self.forumListWidget.clear()
         for thread in threads:
-            listItem = ForumListItem(parent=None, forum_thread=thread)
+            listItem = ForumListItem(parent=None, forum_thread=thread, user=self.user)
             qListWidgetItem = QListWidgetItem(self.forumListWidget)
             qListWidgetItem.setSizeHint(listItem.sizeHint())
             self.forumListWidget.addItem(qListWidgetItem)
@@ -157,14 +160,13 @@ class ForumApp(QMainWindow):
             self.productDropdown.addItem(product.product_name)
 
     def forumClick(self, forumItem):
-        thread = ForumThread(parent=self, thread_no=forumItem.forumThread.thread_no)
+        thread = ForumThread(parent=self, thread_no=forumItem.forumThread.thread_no, user=self.user)
         thread.show()
 
     def createThread(self):
         forumText = str(self.forumTextEdit.text()).strip()
         productText = str(self.productDropdown.currentText())
         if len(forumText) > 0 and len(productText) > 0:
-            forum.createThread(productText, index.user[0], forumText)
+            forum.createThread(productText, self.user[0], forumText)
             self.forumTextEdit.setText("")
             self.setUpForumList()
-

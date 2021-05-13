@@ -8,9 +8,11 @@ from Models.Forums import ForumReply
 database = r"./Database/store_system.db"
 store_db = None
 
+
 def initialize():
     global store_db
     store_db = create_connection(database)
+
 
 def create_connection(db_file):
     conn = None
@@ -64,19 +66,18 @@ def createThread(product_name, account_id, title):
         cur.execute(sql, (product_name, account_id, newPost))
 
 
-
 def getThreadReplies(thread_no):
     if store_db == None:
         initialize()
     results = []
     with store_db:
         cur = store_db.cursor()
-        sql = '''SELECT * FROM forum_reply'''
-        cur.execute(sql)
+        sql = '''SELECT * FROM forum_reply WHERE thread_no = ?'''
+        cur.execute(sql, (thread_no,))
 
         rows = cur.fetchall()
         for row in rows:
-            results.append(ForumReply(row[0], row[1], row[2], row[3]))
+            results.append(ForumReply(*row))
     return results
 
 
@@ -92,7 +93,7 @@ def createReply(thread_no, account_id, post):
         # Look for taboo words and redact if anything.
         # Look for taboo words and redact if anything.
         originalWords = post.split(" ")
-        words =post.lower().strip().split(" ")
+        words = post.lower().strip().split(" ")
         newPost = ""
         foundTaboo = False
         for idx, word in enumerate(words):
@@ -121,10 +122,11 @@ def createWarning(offender_id, reason):
 
         # Check if they have 3 warnings. If so ban account
         sql = '''SELECT * FROM warning WHERE offender_id=?'''
-        cur.execute(sql, (offender_id))
+        cur.execute(sql, (offender_id,))
         if cur.rows() >= 3:
             account.suspendAccount(offender_id)
         account.updateAccountStatus(offender_id)
+
 
 def getThreadsByProduct(product_name):
     if store_db == None:
@@ -140,10 +142,11 @@ def getThreadsByProduct(product_name):
             results.append(ForumThread(*row))
     return results
 
-def createComplaint(complainant_id,offender_id,claim):
+
+def createComplaint(complainant_id, offender_id, claim):
     if store_db == None:
         initialize()
     with store_db:
         cur = store_db.cursor()
         sql = '''INSERT INTO complaint(complainant_id,offender_id,claim) VALUES(?,?,?)'''
-        cur.execute(sql, (complainant_id,offender_id, claim))
+        cur.execute(sql, (complainant_id, offender_id, claim))
