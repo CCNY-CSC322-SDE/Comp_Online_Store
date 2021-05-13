@@ -186,44 +186,50 @@ class CPUCoolerInfo(QWidget, productInfoUI):
 
     # this method will add the selected product to the cart
     def addProductToCart(self):
-        sql = '''SELECT COUNT(*) FROM cart WHERE account_id = ? AND product_id = ?'''
-        params = (self.user[0], self.productId)
-        cur.execute(sql, params)
-        in_cart = cur.fetchone()[0]
-        
         msg = QMessageBox()
-        dia = BiddingDialog()
-        dia.label.setWindowTitle("Add to cart")
-        dia.label.setText("Enter product quantity")
-        dia.lineEdit.setFocus()
-        
-        entry = dia.exec_()
-        if (entry == QDialog.Accepted):
-            string = dia.lineEdit.text()
-            if(string.isnumeric()):
-                if(int(in_cart) == 1):
-                    sql = '''UPDATE cart SET amount = amount + ? WHERE account_id = ? AND product_id = ?'''
-                    params = (int(string), self.user[0], self.productId)
-                    cur.execute(sql, params)
+        if(self.user[0] is not None):
+            sql = '''SELECT COUNT(*) FROM cart WHERE account_id = ? AND product_id = ?'''
+            params = (self.user[0], self.productId)
+            cur.execute(sql, params)
+            in_cart = cur.fetchone()[0]
+            
+            msg = QMessageBox()
+            dia = BiddingDialog()
+            dia.label.setWindowTitle("Add to cart")
+            dia.label.setText("Enter product quantity")
+            dia.lineEdit.setFocus()
+            
+            entry = dia.exec_()
+            if (entry == QDialog.Accepted):
+                string = dia.lineEdit.text()
+                if(string.isnumeric()):
+                    if(int(in_cart) == 1):
+                        sql = '''UPDATE cart SET amount = amount + ? WHERE account_id = ? AND product_id = ?'''
+                        params = (int(string), self.user[0], self.productId)
+                        cur.execute(sql, params)
+                    else:
+                        sql = '''INSERT INTO cart VALUES (?, ?, ?)'''
+                        params = (self.user[0], self.productId, int(string))
+                        cur.execute(sql, params)
+                        
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText("Item added to cart.")
+                    msg.setWindowTitle("Confirmation")
+                    msg.exec_()
+                    con.commit()
+                    self.close()
                 else:
-                    sql = '''INSERT INTO cart VALUES (?, ?, ?)'''
-                    params = (self.user[0], self.productId, int(string))
-                    cur.execute(sql, params)
-                    
-                msg.setIcon(QMessageBox.Information)
-                msg.setText("Item added to cart.")
-                msg.setWindowTitle("Confirmation")
-                msg.exec_()
-                con.commit()
-                self.close()
+                    msg.setIcon(QMessageBox.Warning)
+                    msg.setText("Please enter a valid number.")
+                    msg.setWindowTitle("Error")
+                    msg.exec_()
             else:
-                msg.setIcon(QMessageBox.Warning)
-                msg.setText("Please enter a valid number.")
-                msg.setWindowTitle("Error")
-                msg.exec_()
+                return     
         else:
-            return     
-
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText("Please Log In.")
+            msg.setWindowTitle("Error")
+            msg.exec_()   
 
 # CPUWindow class will initialize the register.ui
 class CPUCoolerWindow(QWidget, cpuCoolerUI):

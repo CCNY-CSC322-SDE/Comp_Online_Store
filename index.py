@@ -40,6 +40,7 @@ mainUI, _ = loadUiType("./ui/mainwindow.ui")
 cartUI, _ = loadUiType("./ui/cart.ui")
 loginUI, _ = loadUiType("./ui/login-dialog.ui")
 logoutUI, _ = loadUiType("./ui/logout-dialog.ui")
+accinfoUI, _ = loadUiType("./ui/account-info.ui")
 
 class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the login.ui
     def __init__(self):
@@ -178,7 +179,8 @@ class LoginDialog(QDialog, loginUI): #INCOMPLETE: NEED TO CHECK IF USER IS BANNE
         self.param[0] = self.lineEditEmailAddress.text()
         self.param[1] = self.lineEditPassword.text()
         if(self.checkEmail()):
-            self.validate_password()
+            if(self.validEmail()):
+                self.validate_password()
 
     def checkEmail(self):
         regex_email = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
@@ -187,6 +189,27 @@ class LoginDialog(QDialog, loginUI): #INCOMPLETE: NEED TO CHECK IF USER IS BANNE
         else:
             self.showMessage("Error: Please enter a valid email.")
             return False
+            
+    def validEmail(self):
+        sql = '''SELECT banned_emails, is_permaban, sent_notif FROM avoid_list WHERE banned_emails = ?'''
+        params = (self.param[0],)
+        self.cur.execute(sql, params)
+        row = self.cur.fetchone()
+        if(row is not None):
+            if(row[1]):
+                self.showMessage("User is permanently banned.")
+            else:
+                self.showMessage("User is suspended.")
+            if(not row[2]):
+                self.showMessage("Email is sent regarding details.")
+                sql = '''UPDATE avoid_list SET sent_notif = 1 WHERE banned_emails = ?'''
+                params = (self.param[0],)
+                self.cur.execute(sql, params)
+                
+            return False
+            con.commit()
+        else:
+            return True
 
     def validate_password(self):
         hash_params = ""
@@ -246,6 +269,11 @@ class LogoutDialog (QDialog, logoutUI):
     def __init__(self):
         QDialog.__init__(self)
         self.setupUi(self)
+        
+class AccountWindow(QMainWindow, accinfoUI):
+    def __init__(self):
+        QMainWindow.__init__(self)
+        self.setupUi(self)
 
 # MainApp class will initialize the mainwindow.ui
 class MainApp(QMainWindow, mainUI):
@@ -272,6 +300,7 @@ class MainApp(QMainWindow, mainUI):
         self.cpuCoolerWindow = None
         self.osWindow = None
         self.cartWindow = None
+        self.accountWindow = None
         self.businessPCWindow = None
         self.computingPCWindow = None
         self.gamingPCWindow = None
@@ -464,7 +493,9 @@ class MainApp(QMainWindow, mainUI):
             
 
     def openAccountWindow(self, checked):
-        pass
+        if self.accountWindow is None:
+            self.accountWindow = AccountWindow()
+        self.accountWindow.show()
         
     # this method will create and open the product details window, when products are double clicked
     def openProductInfoWindow(self, productId):
