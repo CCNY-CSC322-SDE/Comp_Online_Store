@@ -1,5 +1,5 @@
 class Product:
-    def __init__(self, product_id, product_name, price, purpose, architecture, dimensions, weight, quantity, sold,
+    def __init__(self, product_id, product_name, price, purpose, architecture, dimensions, weight, quantity_sold,
                  supplied_by):
         self.product_id = product_id
         self.product_name = product_name
@@ -8,8 +8,7 @@ class Product:
         self.architecture = architecture
         self.dimensions = dimensions
         self.weight = weight
-        self.quantity = quantity
-        self.sold = sold
+        self.quantity_sold = quantity_sold
         self.supplied_by = supplied_by
 
 

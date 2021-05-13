@@ -6,10 +6,11 @@ class BaseAccount:
 
 
 class Account(BaseAccount):
-    def __init__(self, account_id, email, acc_status, password):
+    def __init__(self, account_id, email, acc_status, warnings,password):
         self.account_id = account_id
         self.email = email
         self.acc_status = acc_status
+        self.warnings = warnings
         self.password = password
 
 
