@@ -4,9 +4,12 @@ class Taboo:
 
 
 class ForumThread:
-    def __init__(self, thread_no, product_name):
+    def __init__(self, thread_no, product_name, account_id, title, date):
         self.thread_no = thread_no
         self.product_name = product_name
+        self.account_id = account_id
+        self.title = title
+        self.date = date
 
 
 class ForumReply:
