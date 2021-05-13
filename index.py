@@ -4,6 +4,8 @@ import PyQt5
 import sqlite3
 import datetime
 import re
+import binascii
+import pyscrypt
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -14,7 +16,6 @@ from sqlite3 import Error
 from Prototypes.ProductInfo import ProductInfo
 from Prototypes.ProductSearchWindow import ProductSearchWindow
 from Prototypes.RegistrationWindow import RegistrationWindow
-from Prototypes.LoginWindow import LoginWindow
 from Prototypes.CPUWindow import CPUWindow
 from Prototypes.MotherboardWindow import MotherboardWindow
 from Prototypes.MemoryRAMWindow import MemoryRAMWindow
@@ -35,7 +36,7 @@ cur = con.cursor()
 # load the main window ui
 mainUI, _ = loadUiType("./ui/mainwindow.ui")
 cartUI, _ = loadUiType("./ui/cart.ui")
-
+loginUI, _ = loadUiType("./ui/login-dialog.ui")
 
 class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the login.ui
     def __init__(self):
@@ -160,7 +161,83 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
             msg.exec_()
             self.close_window()
 
-
+class LoginDialog(QDialog, loginUI): #INCOMPLETE: NEED TO CHECK IF USER IS BANNED
+    def __init__(self):
+        QDialog.__init__(self)
+        self.setupUi(self)
+        self.cur = con.cursor()
+        self.param = [None] * 2
+        self.pushButtonCancel.clicked.connect(self.close_window)
+        self.pushButtonLogin.clicked.connect(self.login)
+        
+    def login(self):
+        self.param[0] = self.lineEditEmailAddress.text()
+        self.param[1] = self.lineEditPassword.text()
+        if(self.checkEmail()):
+            self.validate_password()
+        
+    def checkEmail(self):
+        regex_email = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$' 
+        if(re.search(regex_email, self.param[0])):
+            return True
+        else:
+            self.showMessage("Error: Please enter a valid email.")
+            return False
+            
+    def validate_password(self):
+        hash_params = ""
+        row = None
+        sql = '''SELECT account_id, password FROM account WHERE email = ?'''
+        params = (self.param[0],)
+        self.cur.execute(sql, params)
+        
+        if(self.param[1] != ""):
+            row = self.cur.fetchone()
+            if(row is not None):
+                hash_params = row[1].split("|")
+                if(hash_params[5] == str(self.hash_password(self.param[1], hash_params[0], hash_params[1], hash_params[2], hash_params[3], hash_params[4]))): 
+                    self.showMessage("Login Successful.")
+                    self.loadData(row[0])
+                else:
+                    self.showMessage("Password does not match.")
+            else:
+                self.showMessage("Error: Account does not exist.")
+        else:
+            self.showMessage("Please enter a password.")
+            
+    def showMessage(self, msg):
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Information)
+        msgBox.setText(msg)
+        msgBox.setStandardButtons(QMessageBox.Ok)
+        msgBox.exec_()
+    
+    def hash_password(self, string, param0, param1, param2, param3, param4):
+        # Hash
+        hashed = pyscrypt.hash(password = bytes(string, 'utf-8'),
+                        salt = bytes(param4, 'utf-8'), 
+                        N = int(param0), 
+                        r = int(param1), 
+                        p = int(param2), 
+                        dkLen = int(param3))
+         
+        return hashed.hex()
+            
+            
+    def loadData(self, acc_id):
+        global user
+        global cur
+        sql = '''SELECT account.account_id, balance, credit_card FROM account LEFT JOIN personal_acc ON account.account_id = personal_acc.account_id WHERE account.account_id = ?'''
+        params = (acc_id,)
+        cur.execute(sql, params)
+        user = cur.fetchone()
+        self.close_window()
+    
+    def close_window(self):
+        self.lineEditEmailAddress.setText("")
+        self.lineEditPassword.setText("")
+        self.close()
+        
 # MainApp class will initialize the mainwindow.ui
 class MainApp(QMainWindow, mainUI):
     def __init__(self):
@@ -305,9 +382,11 @@ class MainApp(QMainWindow, mainUI):
     # this method will create and open the login window, when Login pushButton is clicked
     def openLoginWindow(self, checked):
         if self.loginWindow is None:
-            self.loginWindow = LoginWindow()
-        self.loginWindow.show()
-
+            self.loginWindow = LoginDialog()
+        self.loginWindow.exec_()
+        
+        
+        
     def openSearchWindow(self, checked):
         if self.searchWindow is None:
             searchQuery = "Macbook Pro"
@@ -647,12 +726,11 @@ def fetch_cart():
     return rows
 
 
-user = (3, 50000, '1111-1111-1111-1111')
+user = []
 user_cart = []
 
 # this main method is not inside the class, it is in the class level
 # this method shows the main window
-
 
 def main():
     app = QApplication(sys.argv)
