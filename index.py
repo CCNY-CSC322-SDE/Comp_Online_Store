@@ -279,7 +279,8 @@ class MainApp(QMainWindow, mainUI):
         self.gamingPCWindow = None
         self.buildBusinessPCWithIntel = None
         self.buildBusinessPCWithAMD = None
-
+        self.cur = con.cursor()
+        
         # call methods
         self.mainWindowUI()
 
@@ -379,7 +380,7 @@ class MainApp(QMainWindow, mainUI):
         entry = dia.exec_()
         msg = QMessageBox()
         if (entry == QDialog.Accepted):
-            user = []
+            user = [None] * 3
             self.pushButtonLogin.show()
             self.pushButtonRegister.show()
             self.pushButtonLogout.hide()
@@ -443,10 +444,28 @@ class MainApp(QMainWindow, mainUI):
         self.searchWindow.show()
 
     def openCartWindow(self, checked):
-        if self.cartWindow is None:
-            self.cartWindow = CartWindow()
-        self.cartWindow.init_cart()
-        self.cartWindow.show()
+        msg = QMessageBox()
+        if(user[0] is not None):
+            if self.cartWindow is None:
+                self.cartWindow = CartWindow()
+            sql = '''SELECT account_id FROM account WHERE account_id = ?'''
+            params = (user[0],)
+            self.cur.execute(sql, params)
+            row = self.cur.fetchone()
+            if(len(row) > 0):
+                self.cartWindow.init_cart()
+                self.cartWindow.show()
+            else:
+                msg.setIcon(QMessageBox.Warning)
+                msg.setText("Account Error.")
+                msg.setWindowTitle("Error")
+                msg.exec_()
+        else:
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText("Please Log In.")
+            msg.setWindowTitle("Error")
+            msg.exec_()
+            
 
     def openAccountWindow(self, checked):
         pass
@@ -788,7 +807,7 @@ def fetch_cart():
     return rows
 
 
-user = []
+user = [None] * 3
 user_cart = []
 
 # this main method is not inside the class, it is in the class level
