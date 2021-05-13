@@ -17,7 +17,7 @@ productInfoUI, _ = loadUiType("./ui/product-info.ui")
 
 
 # BusinessPCWindow class will initialize the register.ui
-class BuildBusinessPCWithIntel(QWidget, pcBuilderUI):
+class BuildBusinessPCWithAMD(QWidget, pcBuilderUI):
     def __init__(self):
         QWidget.__init__(self)
         self.setupUi(self)
@@ -52,10 +52,10 @@ class BuildBusinessPCWithIntel(QWidget, pcBuilderUI):
     # select the  CPU
     def selectCPU(self):
         # sql to retrieve details of the product based on product id
-        sql = ''' SELECT product.product_id as id, product_name, purpose, architecture, cpu_socket, speed, processor_count, price
+        sql = ''' SELECT product.product_id as id, product_name, purpose, architecture, cpu_socket, speed, processor_count,  price
                 FROM product
                 INNER JOIN cpu ON product.product_id = cpu.product_id
-                WHERE purpose = 0 AND architecture = 0 AND UPPER(product_name) LIKE 'INTEL%'
+                WHERE purpose = 0 AND architecture = 1 AND UPPER(product_name) LIKE 'AMD%'
                 ORDER BY id DESC
                 LIMIT 1 '''
 
@@ -66,7 +66,7 @@ class BuildBusinessPCWithIntel(QWidget, pcBuilderUI):
         product = cur.execute(query,).fetchone()
 
         # store product attribute values into variables
-        self. cpuID = product[0]
+        self.cpuID = product[0]
         self.cpuName = product[1]
         self.cpuPurpose = product[2]
         self.cpuArchitecture = product[3]

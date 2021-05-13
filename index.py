@@ -29,6 +29,7 @@ from Prototypes.BusinessPCWindow import BusinessPCWindow
 from Prototypes.ComputingPCWindow import ComputingPCWindow
 from Prototypes.GamingPCWindow import GamingPCWindow
 from Prototypes.BuildBusinessPCWithIntel import BuildBusinessPCWithIntel
+from Prototypes.BuildBusinessPCWithAMD import BuildBusinessPCWithAMD
 
 # connect to the database and create a cursor
 con = sqlite3.connect("./Database/store_system.db")
@@ -271,6 +272,7 @@ class MainApp(QMainWindow, mainUI):
         self.computingPCWindow = None
         self.gamingPCWindow = None
         self.buildBusinessPCWithIntel = None
+        self.buildBusinessPCWithAMD = None
 
         # call methods
         self.mainWindowUI()
@@ -327,6 +329,9 @@ class MainApp(QMainWindow, mainUI):
 
         self.pushButtonIntelBusiness.clicked.connect(
             self.openBuildBusinessPCWithIntel)
+
+        self.pushButtonAMDBusiness.clicked.connect(
+            self.openBuildBusinessPCWithAMD)
 
         ########## Handle double click events on the table items #########
 
@@ -474,6 +479,11 @@ class MainApp(QMainWindow, mainUI):
     def openBuildBusinessPCWithIntel(self):
         self.buildBusinessPCWithIntel = BuildBusinessPCWithIntel()
         self.buildBusinessPCWithIntel.show()
+
+    # open business pc
+    def openBuildBusinessPCWithAMD(self):
+        self.buildBusinessPCWithAMD = BuildBusinessPCWithAMD()
+        self.buildBusinessPCWithAMD.show()
 
     ####### display products on the table widgets #########
 
