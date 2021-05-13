@@ -292,7 +292,17 @@ class AccountWindow(QMainWindow, accinfoUI):
     def __init__(self):
         QMainWindow.__init__(self)
         self.setupUi(self)
-
+        self.cur = con.cursor()
+        sql = '''SELECT first_name, last_name, email, address, credit_card, balance FROM account JOIN personal_acc ON account.account_id = personal_acc.account_id WHERE account.account_id = ?'''
+        params = (user[0],)
+        self.cur.execute(sql, params)
+        row = self.cur.fetchone()
+        self.lineEditFirstName.setText(row[0])
+        self.lineEditLastName.setText(row[1])
+        self.lineEditEmail.setText(row[2])
+        self.lineEditAddress.setText(row[3])
+        self.lineEditCreditCardNo.setText(str(row[4]))
+        self.lineEditBalance.setText(str(row[5]))
 
 # MainApp class will initialize the mainwindow.ui
 class MainApp(QMainWindow, mainUI):
@@ -421,6 +431,7 @@ class MainApp(QMainWindow, mainUI):
         self.pushButtonAccount.show()
 
     def logout(self):
+        global user
         dia = LogoutDialog()
         dia.setWindowTitle("Logout")
         entry = dia.exec_()

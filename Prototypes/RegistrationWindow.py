@@ -178,11 +178,11 @@ class RegistrationWindow(QWidget, registerUI):
         account_id = self.cur.lastrowid
 
         if(credit != ""):
-            sql = '''INSERT INTO personal_acc (account_id,first_name,last_name,address,credit_card) VALUES (?,?,?,?,?)'''
-            self.cur.execute(sql, (account_id,str(fname),str(lname),str(address),credit,))
+            sql = '''INSERT INTO personal_acc (account_id,first_name,last_name,address, balance, credit_card) VALUES (?,?,?,?,?,?)'''
+            self.cur.execute(sql, (account_id,str(fname),str(lname),str(address), 50000, credit,))
         else:
-            sql = '''INSERT INTO personal_acc (account_id,first_name,last_name,address) VALUES (?,?,?,?,?)'''
-            self.cur.execute(sql, (account_id,str(fname),str(lname),str(address),))
+            sql = '''INSERT INTO personal_acc (account_id,first_name,last_name,address,balance) VALUES (?,?,?,?,?)'''
+            self.cur.execute(sql, (account_id,str(fname),str(lname),str(address), 50000,))
             
         self.showMessage("Success: Login now")
 
@@ -207,9 +207,7 @@ class RegistrationWindow(QWidget, registerUI):
                            r = 1, 
                            p = 1, 
                            dkLen = 16)
-            
-            self.showMessage(str(bytes(salt_base, 'utf-8')))
-            self.showMessage("Success: Login now")
+
             pw = ('|'.join(["1024","1","1","16",salt_base,str(hashed.hex())]))
             self.lineEditPassword_1.setStyleSheet("background: white;")
             self.lineEditPassword_2.setStyleSheet("background: white;")
