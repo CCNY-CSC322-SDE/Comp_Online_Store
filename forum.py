@@ -53,7 +53,6 @@ class ReplyListItem(QWidget):
         self.setLayout(layout)
 
     def openComplain(self):
-        print("Complain ")
         complainWindow = complain.ComplainWindow(parent=self, account_id=2, offender_id=self.commentAccount.account_id)
         complainWindow.show()
 
@@ -98,9 +97,8 @@ class ForumThread(QMainWindow):
 
     def createReply(self):
         text = str(self.postTextEdit.toPlainText()).strip()
-        print("TEXT TO BE INSERTED {text}".format(text=text))
         if len(text) > 0:
-            forum.createReply(self.thread_no, 1, text)
+            forum.createReply(self.thread_no, 3, text)
             self.postTextEdit.setText("")
             self.getThreadReplies()
 

@@ -34,7 +34,7 @@ def getThreads():
 
         rows = cur.fetchall()
         for row in rows:
-            results.append(ForumThread(row[0], row[1]))
+            results.append(ForumThread(*row))
     return results
 
 
@@ -48,7 +48,7 @@ def createThread(product_name, account_id, title):
         rows = cur.fetchall()
         # Look for taboo words and redact if anything.
         originalWords = title.split(" ")
-        words = title.lower().split(" ")
+        words = title.lower().strip().split(" ")
         newPost = ""
         foundTaboo = False
         for idx, word in enumerate(words):
@@ -90,16 +90,18 @@ def createReply(thread_no, account_id, post):
         rows = cur.fetchall()
 
         # Look for taboo words and redact if anything.
-        words = post.lower().trim().split(" ")
+        # Look for taboo words and redact if anything.
+        originalWords = post.split(" ")
+        words =post.lower().strip().split(" ")
         newPost = ""
         foundTaboo = False
-        for row in rows:
-            for word in words:
-                if row[0] in word:
-                    newPost = newPost + " * "
+        for idx, word in enumerate(words):
+            for row in rows:
+                if row[0] in word or word in row[0]:
+                    originalWords[idx] = "*"
                     foundTaboo = True
-                else:
-                    newPost = newPost + " " + word + " "
+            newPost = newPost + " " + originalWords[idx] + " "
+        newPost = newPost.strip()
         if foundTaboo:
             createWarning(offender_id=account_id, reason="Taboo word found in post")
         # Finally insert reply to database
