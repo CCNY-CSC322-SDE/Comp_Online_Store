@@ -64,50 +64,30 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
         self.deleteItemsOfLayout(self.verticalLayout)
         self.subtotal = 0
         user_cart = fetch_cart()
-<<<<<<< HEAD
-        
-        
+
         if(len(user_cart) == 0):
             label = QLabel('No items in cart.')
             self.verticalLayout.addWidget(label)
         else:
-            count = 0;
+            count = 0
             for row in user_cart:
-                string = 'Item Name: ' + row[0] + '\nPrice: ' + str(row[1]) + '\nAmount: ' + str(row[2]) + '\n'
+                string = 'Item Name: ' + \
+                    row[0] + '\nPrice: ' + \
+                    str(row[1]) + '\nAmount: ' + str(row[2]) + '\n'
                 self.subtotal += (row[1] * row[2])
                 h_layout = QHBoxLayout()
                 label = QLabel(string)
                 label.setMinimumHeight(100)
-                button = QPushButton(text="Remove", objectName= str(count) + "_remove", clicked = self.removeItem)
+                button = QPushButton(text="Remove", objectName=str(
+                    count) + "_remove", clicked=self.removeItem)
                 button.setMaximumWidth(100)
                 h_layout.addWidget(label)
                 h_layout.addWidget(button)
                 self.verticalLayout.addLayout(h_layout)
                 count += 1
-            
-        self.label_3.setText("Subtotal: " + str(round(self.subtotal,2)))
-        
-=======
 
-        count = 0
-        for row in user_cart:
-            string = 'Item Name: ' + row[0] + '\nPrice: ' + \
-                str(row[1]) + '\nAmount: ' + str(row[2]) + '\n'
-            self.subtotal += (row[1] * row[2])
-            h_layout = QHBoxLayout()
-            label = QLabel(string)
-            label.setMinimumHeight(100)
-            button = QPushButton(text="Remove", objectName=str(
-                count) + "_remove", clicked=self.removeItem)
-            button.setMaximumWidth(100)
-            h_layout.addWidget(label)
-            h_layout.addWidget(button)
-            self.verticalLayout.addLayout(h_layout)
-            count += 1
+        self.label_3.setText("Subtotal: " + str(round(self.subtotal, 2)))
 
-        self.label_3.setText("Subtotal: " + str(self.subtotal))
-
->>>>>>> pc-builder
     def close_window(self):
         con.commit()
         self.close()
@@ -121,13 +101,8 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
         params = (user[0], user_cart[index][3])
         self.cur.execute(sql, params)
         self.deleteItemsOfLayout(self.verticalLayout.itemAt(index))
-<<<<<<< HEAD
-        self.label_3.setText("Subtotal: " + str(round(self.subtotal,2)))
-        
-=======
-        self.label_3.setText("Subtotal: " + str(self.subtotal))
+        self.label_3.setText("Subtotal: " + str(round(self.subtotal, 2)))
 
->>>>>>> pc-builder
         con.commit()
         self.init_cart()
 
@@ -212,6 +187,8 @@ class MainApp(QMainWindow, mainUI):
         self.osWindow = None
         self.cartWindow = None
         self.businessPCWindow = None
+        self.computingPCWindow = None
+        self.gamingPCWindow = None
 
         # call methods
         self.mainWindowUI()
