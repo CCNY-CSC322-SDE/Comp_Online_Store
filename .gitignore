@@ -2,5 +2,10 @@
 .vscode/
 .DS_Store
 *.db
-__pycache__/
+Prototypes/__pycache__/
+Api/__pycache__/
+Models/__pycache__/
+
+
+
 
