@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>522</width>
-    <height>550</height>
+    <width>507</width>
+    <height>625</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -85,8 +85,8 @@
   <widget class="QPushButton" name="pushButtonRegister">
    <property name="geometry">
     <rect>
-     <x>270</x>
-     <y>450</y>
+     <x>280</x>
+     <y>500</y>
      <width>113</width>
      <height>41</height>
     </rect>
@@ -154,7 +154,7 @@
     <string>Password</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEditPassword">
+  <widget class="QLineEdit" name="lineEditPassword_1">
    <property name="geometry">
     <rect>
      <x>100</x>
@@ -171,7 +171,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>450</y>
+     <y>500</y>
      <width>113</width>
      <height>41</height>
     </rect>
@@ -185,7 +185,7 @@
     <rect>
      <x>200</x>
      <y>90</y>
-     <width>121</width>
+     <width>141</width>
      <height>21</height>
     </rect>
    </property>
@@ -214,6 +214,32 @@
      <width>60</width>
      <height>60</height>
     </size>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_9">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>430</y>
+     <width>141</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Re-enter Password</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditPassword_2">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>460</y>
+     <width>321</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="echoMode">
+    <enum>QLineEdit::Password</enum>
    </property>
   </widget>
  </widget>
