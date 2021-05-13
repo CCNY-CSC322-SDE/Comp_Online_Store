@@ -329,7 +329,7 @@ class MainApp(QMainWindow, mainUI):
             self.openGamingPCWindow)
 
         ########## Handle double click events on the table items #########
-
+ 
         # when one of the suggested systems is double clicked
         self.tableWidgetSuggestedSystems.doubleClicked.connect(
             self.selectSuggestedProduct)
