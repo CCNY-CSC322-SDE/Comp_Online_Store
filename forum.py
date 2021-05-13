@@ -105,8 +105,8 @@ class ForumThread(QMainWindow):
 
 
 class ForumApp(QMainWindow):
-    def __init__(self):
-        super(ForumApp, self).__init__(None)
+    def __init__(self,parent=None):
+        super(ForumApp, self).__init__(parent)
         self.setWindowTitle("Forum")
         self.setFixedWidth(800)
         self.setFixedHeight(600)

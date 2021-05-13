@@ -32,6 +32,8 @@ from Prototypes.BuildBusinessPCWithIntel import BuildBusinessPCWithIntel
 from Prototypes.BuildBusinessPCWithAMD import BuildBusinessPCWithAMD
 
 # connect to the database and create a cursor
+import forum
+
 con = sqlite3.connect("./Database/store_system.db")
 cur = con.cursor()
 
@@ -419,6 +421,8 @@ class MainApp(QMainWindow, mainUI):
     # open Discussion tab when Discussion pushButton is clicked
     def openDiscussionTab(self):
         self.tabWidget.setCurrentIndex(6)
+        forumApp = forum.ForumApp(parent=self)
+        forumApp.show()
 
     # this method will create and show the login window, when Login pushButton is clicked
     def openRegistrationWindow(self, checked):
