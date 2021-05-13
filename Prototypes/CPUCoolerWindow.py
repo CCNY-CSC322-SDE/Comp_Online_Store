@@ -12,7 +12,7 @@ con = sqlite3.connect("./Database/store_system.db")
 cur = con.cursor()
 
 # load registration window ui
-cpuUI, _ = loadUiType("./ui/cpu.ui")
+cpuCoolerUI, _ = loadUiType("./ui/cpu-cooler.ui")
 productInfoUI, _ = loadUiType("./ui/product-info.ui")
 bidUI, _ = loadUiType("./ui/bid-dialog.ui")
 
@@ -29,7 +29,7 @@ class BiddingDialog (QDialog, bidUI):
         self.setupUi(self)  
 
 # ProductDetails class will initialize product-details.ui
-class CPUInfo(QWidget, productInfoUI):
+class CPUCoolerInfo(QWidget, productInfoUI):
     # initialize the productDetailsUI
     def __init__(self, id, user):
         QWidget.__init__(self)
@@ -63,10 +63,10 @@ class CPUInfo(QWidget, productInfoUI):
     # retrieve product details from the database
     def productDetails(self, productId):
         # sql to retrieve details of the product based on product id
-        sql = ''' SELECT product.product_id as id, product_name, purpose, architecture, cpu_socket, speed, processor_count, price
+        sql = ''' SELECT product.product_id as id, product_name, cpu_socket,heatsink_dimensions, fan_dimensions, rotation_speed, power, price
                 FROM product
-                INNER JOIN cpu ON product.product_id = cpu.product_id
-                WHERE id=? '''
+                INNER JOIN pc_cooler ON product.product_id = pc_cooler.product_id
+                WHERE id = ? '''
 
         # form the sql query
         query = (sql)
@@ -77,36 +77,34 @@ class CPUInfo(QWidget, productInfoUI):
         # store product attribute values into variables
         self.productID = product[0]
         self.productName = product[1]
-        self.cpuPurpose = product[2]
-        self.cpuArchitecture = product[3]
-        self.cpuSocket = product[4]
-        self.cpuSpeed = product[5]
-        self.cpuProcessorCount = product[6]
-        self.cpuPrice = product[7]
+        self.cpuSocket = product[2]
+        self.heatsinkDimensions = product[3]
+        self.fanDimensions = product[4]
+        self.rotationSpeed = product[5]
+        self.power = product[6]
+        self.price = product[7]
 
     def widgets(self):
         self.labelProductName = QLabel()
         self.labelProductName.setText(str(self.productName))
 
-        self.labelPurpose = QLabel()
-        self.labelPurpose.setText(
-            str(self.product_purpose[self.cpuPurpose]))
-
-        self.labelArchitecture = QLabel()
-        self.labelArchitecture.setText(
-            str(self.product_architecture[self.cpuArchitecture]))
-
         self.labelCPUSocket = QLabel()
         self.labelCPUSocket.setText(str(self.cpuSocket))
 
-        self.labelCPUSpeed = QLabel()
-        self.labelCPUSpeed.setText(str(self.cpuSpeed))
+        self.labelHeatsinkDimensions = QLabel()
+        self.labelHeatsinkDimensions.setText(str(self.heatsinkDimensions))
 
-        self.labelProcessorCount = QLabel()
-        self.labelProcessorCount.setText(str(self.cpuProcessorCount))
+        self.labelFanDimensions = QLabel()
+        self.labelFanDimensions.setText(str(self.fanDimensions))
+
+        self.labelRotationSpeed = QLabel()
+        self.labelRotationSpeed.setText(str(self.rotationSpeed))
+
+        self.labelPower = QLabel()
+        self.labelPower.setText(str(self.power))
 
         self.labelPrice = QLabel()
-        self.labelPrice.setText(str(self.cpuPrice))
+        self.labelPrice.setText(str(self.price))
 
         # add rows and on each row add the labels
         self.formLayoutProductInfo.addRow(
@@ -116,19 +114,19 @@ class CPUInfo(QWidget, productInfoUI):
             QLabel("Price in USD:"), self.labelPrice)
 
         self.formLayoutProductInfo.addRow(
-            QLabel("Main Purpose:"), self.labelPurpose)
-
-        self.formLayoutProductInfo.addRow(
-            QLabel("Architecture:"), self.labelArchitecture)
-
-        self.formLayoutProductInfo.addRow(
             QLabel("CPU Socket:"), self.labelCPUSocket)
 
         self.formLayoutProductInfo.addRow(
-            QLabel("CPU Speed:"), self.labelCPUSpeed)
+            QLabel("Rotation Speed:"), self.labelRotationSpeed)
 
         self.formLayoutProductInfo.addRow(
-            QLabel("# of Cores:"), self.labelProcessorCount)
+            QLabel("Max Power:"), self.labelPower)
+
+        self.formLayoutProductInfo.addRow(
+            QLabel("Heatsink Dimensions:"), self.labelHeatsinkDimensions)
+
+        self.formLayoutProductInfo.addRow(
+            QLabel("Fan Dimensions:"), self.labelFanDimensions)
 
     # count the number of each vote_score of a product
     def getProductRatings(self):
@@ -228,69 +226,70 @@ class CPUInfo(QWidget, productInfoUI):
 
 
 # CPUWindow class will initialize the register.ui
-class CPUWindow(QWidget, cpuUI):
+class CPUCoolerWindow(QWidget, cpuCoolerUI):
     def __init__(self, user):
         QWidget.__init__(self)
         self.setupUi(self)
 
-        self.listCPUs()
+        self.listCPUCoolers()
         self.handleClickEvents()
         self.user = user
 
     # handle click events
     def handleClickEvents(self):
-        # when one of the cpu items is double clicked
-        self.tableWidgetCPUs.doubleClicked.connect(self.selectCPU)
+        # when one of the psu items is double clicked
+        self.tableWidgetCPUCoolers.doubleClicked.connect(
+            self.selectCPUCooler)
 
      # this method will create and open the product details window, when products are double clicked
-    def openCPUInfoWindow(self, productId):
-        self.cpuInfoWindow = CPUInfo(productId, self.user)
-        self.cpuInfoWindow.show()
+    def openCPUCoolerWindow(self, productId):
+        self.cpuCoolerInfoWindow = CPUCoolerInfo(productId, self.user)
+        self.cpuCoolerInfoWindow.show()
 
     # display the list of CPUs
-    def listCPUs(self):
+    def listCPUCoolers(self):
         # hide the product id column
-        self.tableWidgetCPUs.setColumnHidden(0, True)
-        self.tableWidgetCPUs.setFont(QFont("Times", 12))
+        self.tableWidgetCPUCoolers.setColumnHidden(0, True)
+        self.tableWidgetCPUCoolers.setFont(QFont("Times", 12))
 
         # if already exist, reset table data
-        for i in reversed(range(self.tableWidgetCPUs.rowCount())):
-            self.tableWidgetCPUs.removeRow(i)
+        for i in reversed(range(self.tableWidgetCPUCoolers.rowCount())):
+            self.tableWidgetCPUCoolers.removeRow(i)
 
         # sql query to retrieve suggested systems from db
-        sql = ''' SELECT product.product_id as id, product_name, cpu_socket, speed, processor_count, price
+        sql = ''' SELECT product.product_id as id, product_name, cpu_socket,heatsink_dimensions, fan_dimensions, rotation_speed, power, price
                 FROM product
-                INNER JOIN cpu ON product.product_id = cpu.product_id '''
+                INNER JOIN pc_cooler ON product.product_id = pc_cooler.product_id '''
 
         # execute query
         query = cur.execute(sql)
         # populate tableWidgetCPUs
         for row_data in query:
 
-            row_number = self.tableWidgetCPUs.rowCount()
-            self.tableWidgetCPUs.insertRow(row_number)
+            row_number = self.tableWidgetCPUCoolers.rowCount()
+            self.tableWidgetCPUCoolers.insertRow(row_number)
 
             for column_number, data in enumerate(row_data):
                 item = QTableWidgetItem()  # create the item
                 item.setText(str(data))  # set text data to item
                 # change the alignment to center
                 item.setTextAlignment(Qt.AlignHCenter)
-                self.tableWidgetCPUs.setItem(  # set item on tableWidget
+                self.tableWidgetCPUCoolers.setItem(  # set item on tableWidget
                     row_number, column_number, item)
 
-        self.tableWidgetCPUs.setEditTriggers(
+        self.tableWidgetCPUCoolers.setEditTriggers(
             QAbstractItemView.NoEditTriggers)
 
     # select CPU
-    def selectCPU(self):
+    def selectCPUCooler(self):
         # declare variables
         productId = 0
         listProduct = []
 
         # store all attribute values of a product into listProduct
-        for i in range(0, 6):
-            listProduct.append(self.tableWidgetCPUs.item(
-                self.tableWidgetCPUs.currentRow(), i).text())
+        for i in range(0, 4):
+            listProduct.append(self.tableWidgetCPUCoolers.item(
+                self.tableWidgetCPUCoolers.currentRow(), i).text())
         # get the product id
         productId = listProduct[0]
-        self.openCPUInfoWindow(productId)
+        self.openCPUCoolerWindow(productId)

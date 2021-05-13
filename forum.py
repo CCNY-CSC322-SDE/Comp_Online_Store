@@ -2,12 +2,17 @@ import sys
 
 from Api import forum
 from Api import account
+from Api import product as productApi
 from PyQt5.QtWidgets import *
+import complain
 
+
+# Need to swtich accound_id for some of these to the log in value. I've been hardcoding it.
 class ForumListItem(QWidget):
     def __init__(self, parent=None, forum_thread=None):
         super(ForumListItem, self).__init__(parent)
         self.forumThread = forum_thread
+        layout = QVBoxLayout()
         self.threadItemBoxLayout = QHBoxLayout()
         self.titleLabel = QLabel(forum_thread.title)
         self.productNameLabel = QLabel(forum_thread.product_name)
@@ -17,7 +22,8 @@ class ForumListItem(QWidget):
         self.threadItemBoxLayout.addWidget(self.productNameLabel)
         self.threadItemBoxLayout.addWidget(self.dateLabel)
 
-        self.setLayout(self.threadItemBoxLayout)
+        layout.addLayout(self.threadItemBoxLayout)
+        self.setLayout(layout)
 
     def mouseDoubleClickEvent(self, event):
         thread = ForumThread(parent=self, thread_no=self.forumThread.thread_no)
@@ -28,18 +34,28 @@ class ReplyListItem(QWidget):
     def __init__(self, parent=None, forumReply=None, personalAccount=None):
         super(ReplyListItem, self).__init__(parent)
         self.forumReply = forumReply
-        self.personalAccount = personalAccount
+        self.commentAccount = personalAccount
         self.threadItemBoxLayout = QVBoxLayout()
         self.authorLabel = QLabel()
         self.postLabel = QLabel()
+        self.complainButton = QPushButton("Report")
+        layout = QHBoxLayout()
 
-        self.authorLabel.setText(self.personalAccount.first_name)
+        self.authorLabel.setText(self.commentAccount.first_name)
         self.postLabel.setText(self.forumReply.post)
+        self.complainButton.clicked.connect(self.openComplain)
 
         self.threadItemBoxLayout.addWidget(self.authorLabel)
         self.threadItemBoxLayout.addWidget(self.postLabel)
+        layout.addLayout(self.threadItemBoxLayout)
+        layout.addWidget(self.complainButton)
 
-        self.setLayout(self.threadItemBoxLayout)
+        self.setLayout(layout)
+
+    def openComplain(self):
+        print("Complain ")
+        complainWindow = complain.ComplainWindow(parent=self, account_id=2, offender_id=self.commentAccount.account_id)
+        complainWindow.show()
 
 
 class ForumThread(QMainWindow):
@@ -99,7 +115,7 @@ class ForumApp(QMainWindow):
         widget = QWidget()
         layout = QVBoxLayout()
 
-        self.productLineEdit = QLineEdit()
+        self.productDropdown = QComboBox()
         self.forumTextEdit = QLineEdit()
         self.createThreadButton = QPushButton()
         self.forumListWidget = QListWidget()
@@ -111,12 +127,12 @@ class ForumApp(QMainWindow):
         self.topRowLayout.addWidget(QLabel("Date"))
 
         self.forumTextEdit.setPlaceholderText("Enter thread title...")
-        self.productLineEdit.setPlaceholderText("Enter product name...")
+        self.setUpProductDropdown()
         self.createThreadButton.setText("Create Thread")
         self.createThreadButton.clicked.connect(self.createThread)
 
         self.formLayout = QFormLayout()
-        self.formLayout.addRow(QLabel("Product Name"), self.productLineEdit)
+        self.formLayout.addRow(QLabel("Product Name"), self.productDropdown)
         self.formLayout.addRow(QLabel("Title"), self.forumTextEdit)
         self.formLayout.addWidget(self.createThreadButton)
 
@@ -136,17 +152,21 @@ class ForumApp(QMainWindow):
             self.forumListWidget.addItem(qListWidgetItem)
             self.forumListWidget.setItemWidget(qListWidgetItem, listItem)
 
+    def setUpProductDropdown(self):
+        products = productApi.getProducts()
+        for product in products:
+            self.productDropdown.addItem(product.product_name)
+
     def forumClick(self, forumItem):
         thread = ForumThread(parent=self, thread_no=forumItem.forumThread.thread_no)
         thread.show()
 
     def createThread(self):
-        forumText = str(self.forumTextEdit.text())
-        productText = str(self.productLineEdit.text())
+        forumText = str(self.forumTextEdit.text()).strip()
+        productText = str(self.productDropdown.currentText())
         if len(forumText) > 0 and len(productText) > 0:
             forum.createThread(productText, 0, forumText)
             self.forumTextEdit.setText("")
-            self.productLineEdit.setText("")
             self.setUpForumList()
 
 
@@ -155,6 +175,7 @@ def main():
     window = ForumApp()
     window.show()
     app.exec_()
+
 
 if __name__ == '__main__':
     main()
