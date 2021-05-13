@@ -37,6 +37,7 @@ cur = con.cursor()
 mainUI, _ = loadUiType("./ui/mainwindow.ui")
 cartUI, _ = loadUiType("./ui/cart.ui")
 loginUI, _ = loadUiType("./ui/login-dialog.ui")
+logoutUI, _ = loadUiType("./ui/logout-dialog.ui")
  
 class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the login.ui
     def __init__(self):
@@ -240,6 +241,11 @@ class LoginDialog(QDialog, loginUI): #INCOMPLETE: NEED TO CHECK IF USER IS BANNE
         self.lineEditPassword.setText("")
         self.close()
         
+class LogoutDialog (QDialog, logoutUI):
+    def __init__(self):
+        QDialog.__init__(self)
+        self.setupUi(self)
+        
 # MainApp class will initialize the mainwindow.ui
 class MainApp(QMainWindow, mainUI):
     def __init__(self):
@@ -357,11 +363,22 @@ class MainApp(QMainWindow, mainUI):
         self.pushButtonAccount.show()
 
     def logout(self):
-        user = []
-        self.pushButtonLogin.show()
-        self.pushButtonRegister.show()
-        self.pushButtonLogout.hide()
-        self.pushButtonAccount.hide()
+        dia = LogoutDialog()
+        dia.setWindowTitle("Logout")
+        entry = dia.exec_()
+        msg = QMessageBox()
+        if (entry == QDialog.Accepted):
+            user = []
+            self.pushButtonLogin.show()
+            self.pushButtonRegister.show()
+            self.pushButtonLogout.hide()
+            self.pushButtonAccount.hide()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("Logged out.")
+            msg.setWindowTitle("Confirmation")
+            msg.exec_()
+        else:
+            return
 
     ####### Open tabs when respective Main window buttons will be clicked #######
 
