@@ -43,6 +43,7 @@ cartUI, _ = loadUiType("./ui/cart.ui")
 loginUI, _ = loadUiType("./ui/login-dialog.ui")
 logoutUI, _ = loadUiType("./ui/logout-dialog.ui")
 
+
 class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the login.ui
     def __init__(self):
         QMainWindow.__init__(self)
@@ -71,15 +72,15 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
         self.subtotal = 0
         user_cart = fetch_cart()
 
-        if(len(user_cart) == 0):
+        if (len(user_cart) == 0):
             label = QLabel('No items in cart.')
             self.verticalLayout.addWidget(label)
         else:
             count = 0
             for row in user_cart:
                 string = 'Item Name: ' + \
-                    row[0] + '\nPrice: ' + \
-                    str(row[1]) + '\nAmount: ' + str(row[2]) + '\n'
+                         row[0] + '\nPrice: ' + \
+                         str(row[1]) + '\nAmount: ' + str(row[2]) + '\n'
                 self.subtotal += (row[1] * row[2])
                 h_layout = QHBoxLayout()
                 label = QLabel(string)
@@ -153,7 +154,7 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
             self.cur.execute(sql, params)
 
             # update user balance
-            if(self.radioButton.isChecked()):
+            if (self.radioButton.isChecked()):
                 sql = '''UPDATE personal_acc SET balance = ? WHERE account_id = ?'''
                 params = (user[1] - self.subtotal, user[0])
                 self.cur.execute(sql, params)
@@ -166,7 +167,8 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
             msg.exec_()
             self.close_window()
 
-class LoginDialog(QDialog, loginUI): #INCOMPLETE: NEED TO CHECK IF USER IS BANNED
+
+class LoginDialog(QDialog, loginUI):  # INCOMPLETE: NEED TO CHECK IF USER IS BANNED
     def __init__(self, parent):
         QDialog.__init__(self)
         self.setupUi(self)
@@ -179,12 +181,12 @@ class LoginDialog(QDialog, loginUI): #INCOMPLETE: NEED TO CHECK IF USER IS BANNE
     def login(self):
         self.param[0] = self.lineEditEmailAddress.text()
         self.param[1] = self.lineEditPassword.text()
-        if(self.checkEmail()):
+        if (self.checkEmail()):
             self.validate_password()
 
     def checkEmail(self):
         regex_email = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
-        if(re.search(regex_email, self.param[0])):
+        if (re.search(regex_email, self.param[0])):
             return True
         else:
             self.showMessage("Error: Please enter a valid email.")
@@ -197,11 +199,13 @@ class LoginDialog(QDialog, loginUI): #INCOMPLETE: NEED TO CHECK IF USER IS BANNE
         params = (self.param[0],)
         self.cur.execute(sql, params)
 
-        if(self.param[1] != ""):
+        if (self.param[1] != ""):
             row = self.cur.fetchone()
-            if(row is not None):
+            if (row is not None):
                 hash_params = row[1].split("|")
-                if(hash_params[5] == str(self.hash_password(self.param[1], hash_params[0], hash_params[1], hash_params[2], hash_params[3], hash_params[4]))):
+                if (hash_params[5] == str(
+                        self.hash_password(self.param[1], hash_params[0], hash_params[1], hash_params[2],
+                                           hash_params[3], hash_params[4]))):
                     self.showMessage("Login Successful.")
                     self.loadData(row[0])
                 else:
@@ -243,11 +247,13 @@ class LoginDialog(QDialog, loginUI): #INCOMPLETE: NEED TO CHECK IF USER IS BANNE
         self.lineEditEmailAddress.setText("")
         self.lineEditPassword.setText("")
         self.close()
-        
-class LogoutDialog (QDialog, logoutUI):
+
+
+class LogoutDialog(QDialog, logoutUI):
     def __init__(self):
         QDialog.__init__(self)
         self.setupUi(self)
+
 
 # MainApp class will initialize the mainwindow.ui
 class MainApp(QMainWindow, mainUI):
@@ -280,7 +286,7 @@ class MainApp(QMainWindow, mainUI):
         self.buildBusinessPCWithIntel = None
         self.buildBusinessPCWithAMD = None
         self.cur = con.cursor()
-        
+
         # call methods
         self.mainWindowUI()
 
@@ -303,10 +309,10 @@ class MainApp(QMainWindow, mainUI):
         self.pushButtonSearch.clicked.connect(self.openSearchWindow)
 
         self.pushButtonCart.clicked.connect(self.openCartWindow)
-        
+
         self.pushButtonLogout.clicked.connect(self.logout)
         self.pushButtonLogout.hide()
-        
+
         self.pushButtonAccount.clicked.connect(self.openAccountWindow)
         self.pushButtonAccount.hide()
 
@@ -347,7 +353,7 @@ class MainApp(QMainWindow, mainUI):
             self.openBuildBusinessPCWithAMD)
 
         ########## Handle double click events on the table items #########
- 
+
         # when one of the suggested systems is double clicked
         self.tableWidgetSuggestedSystems.doubleClicked.connect(
             self.selectSuggestedProduct)
@@ -367,7 +373,7 @@ class MainApp(QMainWindow, mainUI):
         # when one of the mac system items is double clicked
         self.tableWidgetLinuxSystems.doubleClicked.connect(
             self.selectLinuxSystem)
-            
+
     def login_button_change(self):
         self.pushButtonLogin.hide()
         self.pushButtonRegister.hide()
@@ -422,7 +428,7 @@ class MainApp(QMainWindow, mainUI):
     # open Discussion tab when Discussion pushButton is clicked
     def openDiscussionTab(self):
         self.tabWidget.setCurrentIndex(6)
-        forumApp = forum.ForumApp(parent=self)
+        forumApp = forum.ForumApp(parent=self, user=user)
         forumApp.show()
 
     # this method will create and show the login window, when Login pushButton is clicked
@@ -434,8 +440,8 @@ class MainApp(QMainWindow, mainUI):
     # this method will create and open the login window, when Login pushButton is clicked
     def openLoginWindow(self, checked):
         if self.loginWindow is None:
-            self.loginWindow = LoginDialog(parent = self)
-        self.loginWindow.exec_() 
+            self.loginWindow = LoginDialog(parent=self)
+        self.loginWindow.exec_()
 
     def openSearchWindow(self, checked):
         if self.searchWindow is None:
@@ -445,14 +451,14 @@ class MainApp(QMainWindow, mainUI):
 
     def openCartWindow(self, checked):
         msg = QMessageBox()
-        if(user[0] is not None):
+        if (user[0] is not None):
             if self.cartWindow is None:
                 self.cartWindow = CartWindow()
             sql = '''SELECT account_id FROM account WHERE account_id = ?'''
             params = (user[0],)
             self.cur.execute(sql, params)
             row = self.cur.fetchone()
-            if(len(row) > 0):
+            if (len(row) > 0):
                 self.cartWindow.init_cart()
                 self.cartWindow.show()
             else:
@@ -465,11 +471,10 @@ class MainApp(QMainWindow, mainUI):
             msg.setText("Please Log In.")
             msg.setWindowTitle("Error")
             msg.exec_()
-            
 
     def openAccountWindow(self, checked):
         pass
-        
+
     # this method will create and open the product details window, when products are double clicked
     def openProductInfoWindow(self, productId):
         self.productInfoWindow = ProductInfo(productId, user)
@@ -809,6 +814,7 @@ def fetch_cart():
 
 user = [None] * 3
 user_cart = []
+
 
 # this main method is not inside the class, it is in the class level
 # this method shows the main window
