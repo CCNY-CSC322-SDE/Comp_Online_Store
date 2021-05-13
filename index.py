@@ -162,13 +162,14 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
             self.close_window()
 
 class LoginDialog(QDialog, loginUI): #INCOMPLETE: NEED TO CHECK IF USER IS BANNED
-    def __init__(self):
+    def __init__(self, parent):
         QDialog.__init__(self)
         self.setupUi(self)
         self.cur = con.cursor()
         self.param = [None] * 2
         self.pushButtonCancel.clicked.connect(self.close_window)
         self.pushButtonLogin.clicked.connect(self.login)
+        self.parent = parent
         
     def login(self):
         self.param[0] = self.lineEditEmailAddress.text()
@@ -232,6 +233,7 @@ class LoginDialog(QDialog, loginUI): #INCOMPLETE: NEED TO CHECK IF USER IS BANNE
         cur.execute(sql, params)
         user = cur.fetchone()
         self.close_window()
+        self.parent.login_button_change()
     
     def close_window(self):
         self.lineEditEmailAddress.setText("")
@@ -289,6 +291,12 @@ class MainApp(QMainWindow, mainUI):
         self.pushButtonSearch.clicked.connect(self.openSearchWindow)
 
         self.pushButtonCart.clicked.connect(self.openCartWindow)
+        
+        self.pushButtonLogout.clicked.connect(self.logout)
+        self.pushButtonLogout.hide()
+        
+        self.pushButtonAccount.clicked.connect(self.openAccountWindow)
+        self.pushButtonAccount.hide()
 
         # main navigation buttons
         self.pushButtonHome.clicked.connect(self.openHomeTab)
@@ -341,6 +349,19 @@ class MainApp(QMainWindow, mainUI):
         # when one of the mac system items is double clicked
         self.tableWidgetLinuxSystems.doubleClicked.connect(
             self.selectLinuxSystem)
+            
+    def login_button_change(self):
+        self.pushButtonLogin.hide()
+        self.pushButtonRegister.hide()
+        self.pushButtonLogout.show()
+        self.pushButtonAccount.show()
+
+    def logout(self):
+        user = []
+        self.pushButtonLogin.show()
+        self.pushButtonRegister.show()
+        self.pushButtonLogout.hide()
+        self.pushButtonAccount.hide()
 
     ####### Open tabs when respective Main window buttons will be clicked #######
 
@@ -382,10 +403,8 @@ class MainApp(QMainWindow, mainUI):
     # this method will create and open the login window, when Login pushButton is clicked
     def openLoginWindow(self, checked):
         if self.loginWindow is None:
-            self.loginWindow = LoginDialog()
-        self.loginWindow.exec_()
-        
-        
+            self.loginWindow = LoginDialog(parent = self)
+        self.loginWindow.exec_() 
         
     def openSearchWindow(self, checked):
         if self.searchWindow is None:
@@ -399,6 +418,9 @@ class MainApp(QMainWindow, mainUI):
         self.cartWindow.init_cart()
         self.cartWindow.show()
 
+    def openAccountWindow(self, checked):
+        pass
+        
     # this method will create and open the product details window, when products are double clicked
     def openProductInfoWindow(self, productId):
         self.productInfoWindow = ProductInfo(productId, user)

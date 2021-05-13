@@ -891,13 +891,30 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>660</x>
+      <x>620</x>
       <y>10</y>
-      <width>328</width>
+      <width>361</width>
       <height>40</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QPushButton" name="pushButtonLogout">
+       <property name="text">
+        <string>Log Out</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../icons/user.svg</normaloff>../icons/user.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QPushButton" name="pushButtonLogin">
        <property name="text">
@@ -906,6 +923,23 @@
        <property name="icon">
         <iconset>
          <normaloff>../icons/user.svg</normaloff>../icons/user.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonAccount">
+       <property name="text">
+        <string>Account</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../icons/register.svg</normaloff>../icons/register.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -1071,52 +1105,6 @@
        <property name="icon">
         <iconset>
          <normaloff>../icons/discussion.svg</normaloff>../icons/discussion.svg</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>211</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QPushButton" name="pushButtonLogin_2">
-       <property name="text">
-        <string>Log In</string>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normaloff>../icons/user.svg</normaloff>../icons/user.svg</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonRegister_2">
-       <property name="text">
-        <string>Register</string>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normaloff>../icons/register.svg</normaloff>../icons/register.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
