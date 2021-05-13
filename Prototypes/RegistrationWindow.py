@@ -105,8 +105,7 @@ class RegistrationWindow(QWidget, registerUI):
     # Check if two password match
     def checkPassword(self, password1, password2):
         return password1 == password2
-
-    """REVISION NEEDED: 3rd query doesnt work"""
+    
     # Add the registered account to database
     def addAccount(self, fname, lname, address, credit, emails, password1):
         sql = '''INSERT INTO account (email,password) VALUES (?,?)'''
@@ -114,7 +113,7 @@ class RegistrationWindow(QWidget, registerUI):
 
         sql = '''SELECT account_id FROM account WHERE email = ?'''
         self.cur.execute(sql, (str(emails),))
-        result = self.cur.fetchone()
+        result = self.cur.fetchone()[0]
 
         sql = '''INSERT INTO personal_acc (account_id,first_name,last_name,address,credit_card) VALUES (?,?,?,?,?)'''
         self.cur.execute(sql, (result,str(fname),str(lname),str(address),credit,))
