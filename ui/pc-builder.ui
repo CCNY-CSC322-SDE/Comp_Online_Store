@@ -7,23 +7,23 @@
     <x>0</x>
     <y>0</y>
     <width>850</width>
-    <height>600</height>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Components and Selected Products</string>
   </property>
-  <widget class="QTabWidget" name="tabWidget">
+  <widget class="QTabWidget" name="tabWidgetSelectedComponents">
    <property name="geometry">
     <rect>
      <x>-7</x>
-     <y>50</y>
+     <y>74</y>
      <width>861</width>
-     <height>551</height>
+     <height>400</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -38,7 +38,7 @@
        <height>261</height>
       </rect>
      </property>
-     <layout class="QFormLayout" name="formLayout"/>
+     <layout class="QFormLayout" name="formLayoutCPU"/>
     </widget>
    </widget>
    <widget class="QWidget" name="tab_3">
@@ -54,7 +54,7 @@
        <height>271</height>
       </rect>
      </property>
-     <layout class="QFormLayout" name="formLayout_2"/>
+     <layout class="QFormLayout" name="formLayoutMotherboard"/>
     </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
@@ -70,7 +70,7 @@
        <height>281</height>
       </rect>
      </property>
-     <layout class="QFormLayout" name="formLayout_3"/>
+     <layout class="QFormLayout" name="formLayoutMemory"/>
     </widget>
    </widget>
    <widget class="QWidget" name="tab_4">
@@ -86,34 +86,113 @@
        <height>271</height>
       </rect>
      </property>
-     <layout class="QFormLayout" name="formLayout_4"/>
+     <layout class="QFormLayout" name="formLayoutVideoCards"/>
     </widget>
    </widget>
    <widget class="QWidget" name="tab_5">
     <attribute name="title">
      <string>Case</string>
     </attribute>
+    <widget class="QWidget" name="formLayoutWidget_5">
+     <property name="geometry">
+      <rect>
+       <x>119</x>
+       <y>10</y>
+       <width>531</width>
+       <height>271</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="formLayoutCase"/>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_6">
     <attribute name="title">
      <string>Power Supply</string>
     </attribute>
+    <widget class="QWidget" name="formLayoutWidget_6">
+     <property name="geometry">
+      <rect>
+       <x>159</x>
+       <y>10</y>
+       <width>521</width>
+       <height>291</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="formLayoutPowerSupply"/>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_7">
     <attribute name="title">
      <string>Storage</string>
     </attribute>
+    <widget class="QWidget" name="formLayoutWidget_7">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>10</y>
+       <width>541</width>
+       <height>261</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="formLayoutStorage"/>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_8">
     <attribute name="title">
      <string>CPU Cooler</string>
     </attribute>
+    <widget class="QWidget" name="formLayoutWidget_8">
+     <property name="geometry">
+      <rect>
+       <x>259</x>
+       <y>10</y>
+       <width>501</width>
+       <height>291</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="formLayoutCPUCooler"/>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_9">
     <attribute name="title">
      <string>Operating System</string>
     </attribute>
+    <widget class="QWidget" name="formLayoutWidget_9">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>10</y>
+       <width>481</width>
+       <height>281</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="formLayoutOperatingSystem"/>
+    </widget>
    </widget>
+  </widget>
+  <widget class="QPushButton" name="pushButtonAddAllToCart">
+   <property name="geometry">
+    <rect>
+     <x>706</x>
+     <y>15</y>
+     <width>111</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Add all to Cart</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="formLayoutWidget_10">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>20</y>
+     <width>351</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <layout class="QFormLayout" name="formLayoutTotalPrice"/>
   </widget>
  </widget>
  <resources/>

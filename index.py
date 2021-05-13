@@ -28,6 +28,8 @@ from Prototypes.OSWindow import OSWindow
 from Prototypes.BusinessPCWindow import BusinessPCWindow
 from Prototypes.ComputingPCWindow import ComputingPCWindow
 from Prototypes.GamingPCWindow import GamingPCWindow
+from Prototypes.BuildBusinessPCWithIntel import BuildBusinessPCWithIntel
+from Prototypes.BuildBusinessPCWithAMD import BuildBusinessPCWithAMD
 
 # connect to the database and create a cursor
 con = sqlite3.connect("./Database/store_system.db")
@@ -38,7 +40,7 @@ mainUI, _ = loadUiType("./ui/mainwindow.ui")
 cartUI, _ = loadUiType("./ui/cart.ui")
 loginUI, _ = loadUiType("./ui/login-dialog.ui")
 logoutUI, _ = loadUiType("./ui/logout-dialog.ui")
- 
+
 class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the login.ui
     def __init__(self):
         QMainWindow.__init__(self)
@@ -171,33 +173,33 @@ class LoginDialog(QDialog, loginUI): #INCOMPLETE: NEED TO CHECK IF USER IS BANNE
         self.pushButtonCancel.clicked.connect(self.close_window)
         self.pushButtonLogin.clicked.connect(self.login)
         self.parent = parent
-        
+
     def login(self):
         self.param[0] = self.lineEditEmailAddress.text()
         self.param[1] = self.lineEditPassword.text()
         if(self.checkEmail()):
             self.validate_password()
-        
+
     def checkEmail(self):
-        regex_email = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$' 
+        regex_email = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
         if(re.search(regex_email, self.param[0])):
             return True
         else:
             self.showMessage("Error: Please enter a valid email.")
             return False
-            
+
     def validate_password(self):
         hash_params = ""
         row = None
         sql = '''SELECT account_id, password FROM account WHERE email = ?'''
         params = (self.param[0],)
         self.cur.execute(sql, params)
-        
+
         if(self.param[1] != ""):
             row = self.cur.fetchone()
             if(row is not None):
                 hash_params = row[1].split("|")
-                if(hash_params[5] == str(self.hash_password(self.param[1], hash_params[0], hash_params[1], hash_params[2], hash_params[3], hash_params[4]))): 
+                if(hash_params[5] == str(self.hash_password(self.param[1], hash_params[0], hash_params[1], hash_params[2], hash_params[3], hash_params[4]))):
                     self.showMessage("Login Successful.")
                     self.loadData(row[0])
                 else:
@@ -206,26 +208,25 @@ class LoginDialog(QDialog, loginUI): #INCOMPLETE: NEED TO CHECK IF USER IS BANNE
                 self.showMessage("Error: Account does not exist.")
         else:
             self.showMessage("Please enter a password.")
-            
+
     def showMessage(self, msg):
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Information)
         msgBox.setText(msg)
         msgBox.setStandardButtons(QMessageBox.Ok)
         msgBox.exec_()
-    
+
     def hash_password(self, string, param0, param1, param2, param3, param4):
         # Hash
-        hashed = pyscrypt.hash(password = bytes(string, 'utf-8'),
-                        salt = bytes(param4, 'utf-8'), 
-                        N = int(param0), 
-                        r = int(param1), 
-                        p = int(param2), 
-                        dkLen = int(param3))
-         
+        hashed = pyscrypt.hash(password=bytes(string, 'utf-8'),
+                               salt=bytes(param4, 'utf-8'),
+                               N=int(param0),
+                               r=int(param1),
+                               p=int(param2),
+                               dkLen=int(param3))
+
         return hashed.hex()
-            
-            
+
     def loadData(self, acc_id):
         global user
         global cur
@@ -235,7 +236,7 @@ class LoginDialog(QDialog, loginUI): #INCOMPLETE: NEED TO CHECK IF USER IS BANNE
         user = cur.fetchone()
         self.close_window()
         self.parent.login_button_change()
-    
+
     def close_window(self):
         self.lineEditEmailAddress.setText("")
         self.lineEditPassword.setText("")
@@ -245,7 +246,7 @@ class LogoutDialog (QDialog, logoutUI):
     def __init__(self):
         QDialog.__init__(self)
         self.setupUi(self)
-        
+
 # MainApp class will initialize the mainwindow.ui
 class MainApp(QMainWindow, mainUI):
     def __init__(self):
@@ -274,6 +275,8 @@ class MainApp(QMainWindow, mainUI):
         self.businessPCWindow = None
         self.computingPCWindow = None
         self.gamingPCWindow = None
+        self.buildBusinessPCWithIntel = None
+        self.buildBusinessPCWithAMD = None
 
         # call methods
         self.mainWindowUI()
@@ -333,6 +336,12 @@ class MainApp(QMainWindow, mainUI):
 
         self.pushButtonPreBuiltGaming.clicked.connect(
             self.openGamingPCWindow)
+
+        self.pushButtonIntelBusiness.clicked.connect(
+            self.openBuildBusinessPCWithIntel)
+
+        self.pushButtonAMDBusiness.clicked.connect(
+            self.openBuildBusinessPCWithAMD)
 
         ########## Handle double click events on the table items #########
  
@@ -422,7 +431,7 @@ class MainApp(QMainWindow, mainUI):
         if self.loginWindow is None:
             self.loginWindow = LoginDialog(parent = self)
         self.loginWindow.exec_() 
-        
+
     def openSearchWindow(self, checked):
         if self.searchWindow is None:
             searchQuery = "Macbook Pro"
@@ -498,10 +507,20 @@ class MainApp(QMainWindow, mainUI):
         self.computingPCWindow = ComputingPCWindow()
         self.computingPCWindow.show()
 
-        # open case window and list CPUs
+    # open case window and list CPUs
     def openGamingPCWindow(self):
         self.gamingPCWindow = GamingPCWindow()
         self.gamingPCWindow.show()
+
+    # open business pc
+    def openBuildBusinessPCWithIntel(self):
+        self.buildBusinessPCWithIntel = BuildBusinessPCWithIntel()
+        self.buildBusinessPCWithIntel.show()
+
+    # open business pc
+    def openBuildBusinessPCWithAMD(self):
+        self.buildBusinessPCWithAMD = BuildBusinessPCWithAMD()
+        self.buildBusinessPCWithAMD.show()
 
     ####### display products on the table widgets #########
 
@@ -770,6 +789,7 @@ user_cart = []
 
 # this main method is not inside the class, it is in the class level
 # this method shows the main window
+
 
 def main():
     app = QApplication(sys.argv)
