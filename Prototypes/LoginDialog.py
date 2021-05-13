@@ -47,7 +47,7 @@ class LoginDialog(QDialog, loginUI):
         params = (self.param[0],)
         self.cur.execute(sql, params)
         
-        if(self.param[1] != ""):
+        if(self.param[1] != ""): 
             row = self.cur.fetchone()[0]
             if(row is not None):
                 hash_params = row.split("|")
