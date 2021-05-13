@@ -24,6 +24,9 @@ from Prototypes.PSUWindow import PSUWindow
 from Prototypes.StorageWindow import StorageWindow
 from Prototypes.CPUCoolerWindow import CPUCoolerWindow
 from Prototypes.OSWindow import OSWindow
+from Prototypes.BusinessPCWindow import BusinessPCWindow
+from Prototypes.ComputingPCWindow import ComputingPCWindow
+from Prototypes.GamingPCWindow import GamingPCWindow
 
 # connect to the database and create a cursor
 con = sqlite3.connect("./Database/store_system.db")
@@ -42,25 +45,26 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
         self.cur = con.cursor()
         self.init_cart()
         self.verticalLayout.setAlignment(Qt.AlignTop)
-        
+
         self.pushButton.clicked.connect(self.checkout)
         self.pushButton_2.clicked.connect(self.close_window)
-    
+
     def deleteItemsOfLayout(self, layout):
         if layout is not None:
-            for i in reversed(range(layout.count())): 
+            for i in reversed(range(layout.count())):
                 item = layout.takeAt(i)
                 widget = item.widget()
                 if widget is not None:
                     widget.setParent(None)
                 else:
                     self.deleteItemsOfLayout(item.layout())
-    
+
     def init_cart(self):
         global user_cart
         self.deleteItemsOfLayout(self.verticalLayout)
         self.subtotal = 0
         user_cart = fetch_cart()
+<<<<<<< HEAD
         
         
         if(len(user_cart) == 0):
@@ -83,28 +87,54 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
             
         self.label_3.setText("Subtotal: " + str(round(self.subtotal,2)))
         
+=======
+
+        count = 0
+        for row in user_cart:
+            string = 'Item Name: ' + row[0] + '\nPrice: ' + \
+                str(row[1]) + '\nAmount: ' + str(row[2]) + '\n'
+            self.subtotal += (row[1] * row[2])
+            h_layout = QHBoxLayout()
+            label = QLabel(string)
+            label.setMinimumHeight(100)
+            button = QPushButton(text="Remove", objectName=str(
+                count) + "_remove", clicked=self.removeItem)
+            button.setMaximumWidth(100)
+            h_layout.addWidget(label)
+            h_layout.addWidget(button)
+            self.verticalLayout.addLayout(h_layout)
+            count += 1
+
+        self.label_3.setText("Subtotal: " + str(self.subtotal))
+
+>>>>>>> pc-builder
     def close_window(self):
         con.commit()
         self.close()
-         
+
     def removeItem(self):
         global user_cart
         button = self.sender()
-        index = int(re.sub('[^0-9]','', button.objectName()))
+        index = int(re.sub('[^0-9]', '', button.objectName()))
         self.subtotal -= user_cart[index][1] * user_cart[index][2]
         sql = '''DELETE FROM cart WHERE account_id = ? and product_id = ?'''
         params = (user[0], user_cart[index][3])
         self.cur.execute(sql, params)
         self.deleteItemsOfLayout(self.verticalLayout.itemAt(index))
+<<<<<<< HEAD
         self.label_3.setText("Subtotal: " + str(round(self.subtotal,2)))
         
+=======
+        self.label_3.setText("Subtotal: " + str(self.subtotal))
+
+>>>>>>> pc-builder
         con.commit()
         self.init_cart()
-         
+
     def checkout(self):
         global user_cart
         msg = QMessageBox()
-        
+
         if (self.radioButton.isChecked() and self.subtotal > user[1]):
             msg.setIcon(QMessageBox.Warning)
             msg.setText("Insufficient Balance.")
@@ -112,46 +142,49 @@ class CartWindow(QMainWindow, cartUI):  # LoginWindow class will initialize the 
             msg.setWindowTitle("Error")
             msg.exec_()
         elif (user[2] == 'none'):
-            #ASSUMES: user can only enter a valid credit card so credit card could only be a valid one or none
+            # ASSUMES: user can only enter a valid credit card so credit card could only be a valid one or none
             msg.setIcon(QMessageBox.Warning)
             msg.setText("No Credit Card on file.")
             msg.setInformativeText("Please pick a different payment method.")
             msg.setWindowTitle("Error")
             msg.exec_()
-        else: 
-            #add transaction to transaction db
+        else:
+            # add transaction to transaction db
             sql = '''INSERT INTO user_orders(account_id, subtotal, purchase_date, date_shipped, tracking_no, order_status) VALUES (?,?,?,?,?,?)'''
-            params = (user[0], self.subtotal, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "NULL", "NULL", 0)
+            params = (user[0], self.subtotal, datetime.datetime.now().strftime(
+                "%Y-%m-%d %H:%M:%S"), "NULL", "NULL", 0)
             self.cur.execute(sql, params)
             transaction_id = self.cur.lastrowid
-            
-            #add purchased items to purchased items db
+
+            # add purchased items to purchased items db
             for row in user_cart:
                 sql = '''INSERT INTO purchased_items(transaction_id, item_name, amount, item_price, vote_score) VALUES (?,?,?,?,?)'''
                 params = (transaction_id, row[0], row[2], row[1], "NULL")
                 self.cur.execute(sql, params)
-					
+
                 sql = '''UPDATE product SET quantity_sold = quantity_sold + ? WHERE product_name = ?'''
                 params = (row[2], row[0])
                 self.cur.execute(sql, params)
-            
-            #clear user cart
+
+            # clear user cart
             sql = '''DELETE FROM cart WHERE account_id = ?'''
             params = (user[0],)
             self.cur.execute(sql, params)
-            
-            #update user balance
+
+            # update user balance
             if(self.radioButton.isChecked()):
                 sql = '''UPDATE personal_acc SET balance = ? WHERE account_id = ?'''
                 params = (user[1] - self.subtotal, user[0])
                 self.cur.execute(sql, params)
-            
+
             msg.setIcon(QMessageBox.Information)
             msg.setText("Purchase successful.")
-            msg.setInformativeText("Processing your order can take a few business days.")
+            msg.setInformativeText(
+                "Processing your order can take a few business days.")
             msg.setWindowTitle("Confirmation")
             msg.exec_()
             self.close_window()
+
 
 # MainApp class will initialize the mainwindow.ui
 class MainApp(QMainWindow, mainUI):
@@ -178,6 +211,7 @@ class MainApp(QMainWindow, mainUI):
         self.cpuCoolerWindow = None
         self.osWindow = None
         self.cartWindow = None
+        self.businessPCWindow = None
 
         # call methods
         self.mainWindowUI()
@@ -201,7 +235,7 @@ class MainApp(QMainWindow, mainUI):
         self.pushButtonSearch.clicked.connect(self.openSearchWindow)
 
         self.pushButtonCart.clicked.connect(self.openCartWindow)
-		
+
         # main navigation buttons
         self.pushButtonHome.clicked.connect(self.openHomeTab)
         self.pushButtonMac.clicked.connect(self.openMacTab)
@@ -211,7 +245,7 @@ class MainApp(QMainWindow, mainUI):
         self.pushButtonComponents.clicked.connect(self.openComponentsTab)
         self.pushButtonDiscussion.clicked.connect(self.openDiscussionTab)
 
-        # connect buttons under components tab to methods
+        # connect tool buttons under components tab to methods
         self.toolButtonCPU.clicked.connect(self.openCPUWindow)
         self.toolButtonMotherboard.clicked.connect(self.openMotherboardWindow)
         self.toolButtonMemory.clicked.connect(self.openMemoryRAMWindow)
@@ -221,6 +255,16 @@ class MainApp(QMainWindow, mainUI):
         self.toolButtonStorage.clicked.connect(self.openStorageWindow)
         self.toolButtonCPUCooler.clicked.connect(self.openCPUCoolerWindow)
         self.toolButtonOS.clicked.connect(self.openOSWindow)
+
+        # connect push buttons under pc builder tab to methods
+        self.pushButtonPreBuiltBusiness.clicked.connect(
+            self.openBusinessPCWindow)
+
+        self.pushButtonPreBuiltComputing.clicked.connect(
+            self.openComputingPCWindow)
+
+        self.pushButtonPreBuiltGaming.clicked.connect(
+            self.openGamingPCWindow)
 
         ########## Handle double click events on the table items #########
 
@@ -292,7 +336,7 @@ class MainApp(QMainWindow, mainUI):
         if self.searchWindow is None:
             self.searchWindow = ProductSearchWindow()
         self.searchWindow.show()
-		
+
     def openCartWindow(self, checked):
         if self.cartWindow is None:
             self.cartWindow = CartWindow()
@@ -348,6 +392,21 @@ class MainApp(QMainWindow, mainUI):
     def openOSWindow(self):
         self.osWindow = OSWindow(user)
         self.osWindow.show()
+
+    # open case window and list CPUs
+    def openBusinessPCWindow(self):
+        self.businessPCWindow = BusinessPCWindow()
+        self.businessPCWindow.show()
+
+    # open case window and list CPUs
+    def openComputingPCWindow(self):
+        self.computingPCWindow = ComputingPCWindow()
+        self.computingPCWindow.show()
+
+        # open case window and list CPUs
+    def openGamingPCWindow(self):
+        self.gamingPCWindow = GamingPCWindow()
+        self.gamingPCWindow.show()
 
     ####### display products on the table widgets #########
 
@@ -607,14 +666,17 @@ def fetch_cart():
     sql = '''SELECT product_name, price, amount, cart.product_id FROM cart INNER JOIN product ON cart.product_id = product.product_id WHERE account_id = ?'''
     params = (user[0],)
     cur.execute(sql, params)
-    rows =  cur.fetchall() 
+    rows = cur.fetchall()
     return rows
-		
+
+
 user = (3, 50000, '1111-1111-1111-1111')
 user_cart = []
 
 # this main method is not inside the class, it is in the class level
 # this method shows the main window
+
+
 def main():
     app = QApplication(sys.argv)
     # set app icon
